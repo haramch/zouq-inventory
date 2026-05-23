@@ -1,0 +1,3254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zouq Wear Inventory Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 20px 30px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 30px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .table-container {
+            display: block;
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            background: #f8f9fa;
+        }
+
+        table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .low-stock {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .color-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .color-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tab {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Orders Two-Panel Layout */
+        .orders-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .order-form-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-form-panel h2 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .order-form-panel .form-group {
+            margin-bottom: 10px;
+        }
+
+        .order-form-panel .form-group label {
+            font-size: 13px;
+        }
+
+        .order-form-panel .form-group input,
+        .order-form-panel .form-group select {
+            padding: 9px;
+            font-size: 13px;
+        }
+
+        .orders-list-panel {
+            min-width: 0;
+        }
+
+        .orders-list-panel h2 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .orders-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-top: 0;
+        }
+
+        .orders-table {
+            min-width: unset !important;
+            width: 100%;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 9px 11px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .order-actions-row {
+            display: flex;
+            gap: 3px;
+        }
+
+        .order-items-section {
+            border-top: 2px solid #e0e0e0;
+            margin-top: 14px;
+            padding-top: 14px;
+        }
+
+        .order-item-row {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .order-item-row .form-grid {
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .order-item-row .form-group input,
+        .order-item-row .form-group select {
+            padding: 7px;
+            font-size: 12px;
+        }
+
+        .order-item-row .form-group label {
+            font-size: 11px;
+        }
+
+        @media (max-width: 1024px) {
+            .orders-layout {
+                grid-template-columns: 1fr;
+            }
+            .order-form-panel {
+                position: static;
+            }
+            .orders-table {
+                min-width: 700px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="authContainer" class="container" style="display: none; margin-top: 100px; max-width: 400px;">
+        <div class="header">
+            <h1>🛍️ Zouq Wear Inventory System</h1>
+            <p>Login to Continue</p>
+        </div>
+        <div style="padding: 40px;">
+            <div id="authMessage" style="text-align: center; margin-bottom: 20px;"></div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <h3 style="text-align: center; margin-bottom: 20px;">Login</h3>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter email" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <button onclick="handleLogin()" style="width: 100%; padding: 12px; margin-top: 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Login</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;">Don't have an account? <a href="#" onclick="toggleAuthForm('register'); return false;" style="color: #667eea; cursor: pointer;">Register</a></p>
+                <p style="text-align: center; margin-top: 10px; color: #666;">Forgot password? <a href="#" onclick="toggleAuthForm('forgotPassword'); return false;" style="color: #667eea; cursor: pointer;">Reset</a></p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 20px;">Register</h3>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter full name" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" placeholder="Enter email" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="Enter password (min 6 chars)" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <button onclick="handleRegister()" style="width: 100%; padding: 12px; margin-top: 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Register</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;">Already have an account? <a href="#" onclick="toggleAuthForm('login'); return false;" style="color: #667eea; cursor: pointer;">Login</a></p>
+            </div>
+
+            <!-- Email Verification Form -->
+            <div id="verificationForm" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 20px;">Verify Email</h3>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">Enter the 6-digit code sent to your email</p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="verifyEmail" placeholder="Enter email" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Verification Code</label>
+                    <input type="text" id="verifyCode" placeholder="Enter 6-digit code" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <button onclick="handleVerifyEmail()" style="width: 100%; padding: 12px; margin-top: 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Verify</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;"><a href="#" onclick="toggleAuthForm('login'); return false;" style="color: #667eea; cursor: pointer;">Back to Login</a></p>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordForm" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 20px;">Reset Password</h3>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">Enter your email to receive reset code</p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="forgotEmail" placeholder="Enter email" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <button onclick="handleForgotPassword()" style="width: 100%; padding: 12px; margin-top: 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Send Reset Code</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;"><a href="#" onclick="toggleAuthForm('login'); return false;" style="color: #667eea; cursor: pointer;">Back to Login</a></p>
+            </div>
+
+            <!-- Reset Password with Code Form -->
+            <div id="resetPasswordForm" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 20px;">Reset Password</h3>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="resetEmail" placeholder="Enter email" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Reset Code</label>
+                    <input type="text" id="resetCode" placeholder="Enter 6-digit code" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>New Password</label>
+                    <input type="password" id="resetNewPassword" placeholder="Enter new password (min 6 chars)" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                </div>
+                <button onclick="handleResetPassword()" style="width: 100%; padding: 12px; margin-top: 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Reset Password</button>
+                <p style="text-align: center; margin-top: 15px; color: #666;"><a href="#" onclick="toggleAuthForm('login'); return false;" style="color: #667eea; cursor: pointer;">Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>🛍️ Zouq Wear Inventory System</h1>
+                    <p></p>
+                </div>
+                <div>
+                    <span id="userDisplayName" style="color: white; font-size: 16px; margin-right: 20px;"></span>
+                    <button onclick="handleLogout()" style="padding: 8px 16px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 5px; cursor: pointer; font-weight: 600;">Logout</button>
+                </div>
+            </div>
+        </div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('categories')">Categories</button>
+            <button class="tab" onclick="switchTab('colors')">Colors</button>
+            <button class="tab" onclick="switchTab('inventory')">Inventory</button>
+            <button class="tab" onclick="switchTab('orders')">Orders</button>
+            <button class="tab" onclick="switchTab('reports')">Reports</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="content active">
+            <h2>Dashboard Overview</h2>
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <h3>Stock Summary by Size</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Total Stock</th>
+                            <th>Colors Available</th>
+                            <th>Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sizeSummaryTable"></tbody>
+                </table>
+            </div>
+
+            <h3 style="margin-top: 30px;">Low Stock Alert (Less than 5)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Stock</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lowStockTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Categories Management -->
+        <div id="categories" class="content">
+            <h2>Categories Management</h2>
+            
+            <h3>Add New Category</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="categoryName" placeholder="e.g., Cotton Fabric, Wash n Wear">
+                </div>
+                <div class="form-group">
+                    <label>Sizes (comma separated)</label>
+                    <input type="text" id="categorySizes" placeholder="e.g., 14,16,18,20,22,24">
+                </div>
+                <div class="form-group">
+                    <label>Default Cost Price (Rs.)</label>
+                    <input type="number" id="categoryDefaultCost" placeholder="300" min="0">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addCategory()">+ Add Category</button>
+            <div id="categoryAlert"></div>
+
+            <h3 style="margin-top: 30px;">All Categories</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th>Sizes</th>
+                            <th>Default Cost</th>
+                            <th>Total Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Edit Category Modal -->
+        <div id="editCategoryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
+            <div style="background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); box-sizing: border-box;">
+                <h3 style="margin-bottom: 20px;">Edit Category</h3>
+
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="editCategoryName" placeholder="e.g., T-Shirts" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; font-size: 14px;">
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Available Sizes (comma separated)</label>
+                    <input type="text" id="editCategorySizes" placeholder="e.g., 14, 16, 18, 20" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; font-size: 14px;">
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Default Cost Price (Rs.)</label>
+                    <input type="number" id="editCategoryDefaultCost" placeholder="0" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; font-size: 14px;">
+                </div>
+
+                <input type="hidden" id="editCategoryOldName">
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button onclick="saveEditCategory()" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+                    <button onclick="closeEditCategoryModal()" class="btn btn-secondary" style="flex: 1; background: #6c757d;">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colors Management -->
+        <div id="colors" class="content">
+            <h2>Colors Management</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Color Name (Urdu/English)</label>
+                    <input type="text" id="colorName" placeholder="e.g., Red, Lal, Blue">
+                </div>
+                <div class="form-group">
+                    <label>Color Code (Hex)</label>
+                    <input type="color" id="colorCode" value="#ff0000">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="addColor()">+ Add Color</button>
+            <div id="colorAlert"></div>
+
+            <h3 style="margin-top: 30px;">Available Colors</h3>
+            <div class="color-list" id="colorsList"></div>
+
+            <h3 style="margin-top: 30px;">All Colors</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Preview</th>
+                            <th>Total Stock (All Sizes)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="colorsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Inventory Management -->
+        <div id="inventory" class="content">
+            <h2>Inventory Management</h2>
+            
+            <div class="filter-section">
+                <h3>Add/Update Stock</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="invCategory" onchange="updateSizeDropdown()">
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Size</label>
+                        <select id="invSize">
+                            <option value="">Select Size</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <select id="invColor">
+                            <option value="">Select Color</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Action</label>
+                        <select id="invAction">
+                            <option value="add">Add Stock</option>
+                            <option value="remove">Remove Stock</option>
+                            <option value="set">Set Stock</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="invQuantity" min="0" placeholder="Enter quantity">
+                    </div>
+                    <div class="form-group">
+                        <label>Date Added</label>
+                        <input type="date" id="invDate">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="updateInventory()">Update Stock</button>
+                <button class="btn btn-success" onclick="showBulkUpdateModal()">Bulk Update</button>
+                <div id="invAlert"></div>
+            </div>
+
+            <div class="filter-section">
+                <h3>Filter Inventory</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Filter by Category</label>
+                        <select id="filterCategory" onchange="filterInventory()">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filter by Size</label>
+                        <select id="filterSize" onchange="filterInventory()">
+                            <option value="">All Sizes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filter by Color</label>
+                        <select id="filterColor" onchange="filterInventory()">
+                            <option value="">All Colors</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Current Stock (Total Items: <span id="totalItems">0</span>)</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Stock</th>
+                            <th>Cost Price</th>
+                            <th>Selling Price</th>
+                            <th>Total Value</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <div id="orders" class="content">
+            <div class="orders-layout">
+
+                <!-- Left: New Order Form -->
+                <div class="order-form-panel">
+                    <h2>🛒 New Order</h2>
+
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="customerName" placeholder="Customer ka naam">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="customerPhone" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="customerAddress" placeholder="Delivery address">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="orderDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery (Rs.)</label>
+                            <input type="number" id="deliveryCharges" value="250" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment</label>
+                        <select id="paymentMethod">
+                            <option value="COD">Cash on Delivery (COD)</option>
+                            <option value="Prepaid">Prepaid</option>
+                        </select>
+                    </div>
+
+                    <div class="order-items-section">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h3 style="margin:0; font-size:0.95em; color:#333;">Order Items</h3>
+                            <button class="btn btn-success btn-small" onclick="addOrderItem()">+ Add Item</button>
+                        </div>
+                        <div id="orderItems"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="createOrder()" style="width:100%; padding:13px; margin-top:4px;">Create Order</button>
+                    <div id="orderAlert" style="margin-top:10px;"></div>
+                </div>
+
+                <!-- Right: All Orders -->
+                <div class="orders-list-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                        <h2>📋 All Orders</h2>
+                        <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="filterOrders()" style="padding:9px 13px; border:2px solid #e0e0e0; border-radius:8px; font-size:13px; width:220px;">
+                    </div>
+                    <div class="orders-table-container">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Profit</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+        <!-- Reports -->
+        <div id="reports" class="content">
+            <h2>Reports & Analytics</h2>
+            
+            <div class="action-buttons" style="margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="exportToExcel()">📊 Export Orders</button>
+                <button class="btn btn-success" onclick="exportInventory()">📦 Export Inventory</button>
+                <button class="btn btn-warning" onclick="backupData()">💾 Backup All Data</button>
+                <button class="btn btn-primary" onclick="document.getElementById('restoreFile').click()">📥 Restore Data</button>
+                <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreData(event)">
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Stock Items</h3>
+                    <div class="value" id="totalStockItems">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <div class="value" id="totalOrders">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <div class="value" id="totalRevenue">Rs. 0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Inventory Value</h3>
+                    <div class="value" id="inventoryValue">Rs. 0</div>
+                </div>
+            </div>
+
+            <h3>Top Selling Combinations</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Units Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topSellingTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Item</h2>
+                <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Size</label>
+                    <input type="text" id="editSize" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <input type="text" id="editColor" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number" id="editStock" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Cost Price (Rs.)</label>
+                    <input type="number" id="editCost" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Selling Price (Rs.)</label>
+                    <input type="number" id="editSelling" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Date Added</label>
+                    <input type="date" id="editDateAdded">
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+                <button class="btn btn-danger" onclick="deleteItem()">Delete Item</button>
+                <button class="btn" style="background: #6c757d; color: white;" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div id="editOrderModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Edit Order #<span id="editOrderId"></span></h2>
+                <span class="close-btn" onclick="closeEditOrderModal()">&times;</span>
+            </div>
+            
+            <h3>Customer Details</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="editOrderCustomerName">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="editOrderPhone">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="editOrderAddress">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="editOrderDate">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Charges</label>
+                    <input type="number" id="editOrderDelivery" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="editOrderPayment">
+                        <option value="COD">Cash on Delivery (COD)</option>
+                        <option value="Prepaid">Prepaid</option>
+                    </select>
+                </div>
+                
+
+            <h3 style="margin-top: 20px;">Order Items</h3>
+            <div id="editOrderItemsList"></div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h3>Order Summary</h3>
+                <p><strong>Sell Price:</strong> Rs. <span id="editOrderSellPrice">0</span></p>
+                
+                <p><strong>COD Tax (4%):</strong> Rs. <span id="editOrderCodTax">0</span></p>
+                <p><strong>Delivery:</strong> Rs. <span id="editOrderDeliveryDisplay">0</span></p>
+                <p><strong>Total:</strong> Rs. <span id="editOrderTotal">0</span></p>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="saveOrderEdit()">Save Order</button>
+                <button class="btn" style="background: #6c757d; color: white;" onclick="closeEditOrderModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Update Modal -->
+    <div id="bulkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Bulk Update Prices</h2>
+                <span class="close-btn" onclick="closeBulkModal()">&times;</span>
+            </div>
+            <p>Update cost and selling prices for all items of a specific size or color:</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Update By</label>
+                    <select id="bulkUpdateBy">
+                        <option value="size">By Size</option>
+                        <option value="color">By Color</option>
+                        <option value="all">All Items</option>
+                    </select>
+                </div>
+                <div class="form-group" id="bulkSizeGroup">
+                    <label>Select Size</label>
+                    <select id="bulkSize"></select>
+                </div>
+                <div class="form-group" id="bulkColorGroup" style="display: none;">
+                    <label>Select Color</label>
+                    <select id="bulkColor"></select>
+                </div>
+                <div class="form-group">
+                    <label>New Cost Price (Rs.)</label>
+                    <input type="number" id="bulkCost" min="0" placeholder="Leave empty to skip">
+                </div>
+                <div class="form-group">
+                    <label>New Selling Price (Rs.)</label>
+                    <input type="number" id="bulkSelling" min="0" placeholder="Leave empty to skip">
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="applyBulkUpdate()">Apply Update</button>
+                <button class="btn" style="background: #6c757d; color: white;" onclick="closeBulkModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // Initialize data
+        let categories = [
+            { 
+                name: 'Cotton Fabric', 
+                sizes: ['14', '16', '18', '20', '22', '24'],
+                defaultCost: 300,
+                defaultSell: 450
+            },
+            { 
+                name: 'Wash n Wear', 
+                sizes: ['26', '28', '30', '32', '34', '36'],
+                defaultCost: 400,
+                defaultSell: 550
+            }
+        ];
+
+        let colors = [
+            { name: 'Red', code: '#ff0000' },
+            { name: 'Blue', code: '#0000ff' },
+            { name: 'Green', code: '#00ff00' },
+            { name: 'Black', code: '#000000' },
+            { name: 'White', code: '#ffffff' }
+        ];
+
+        let inventory = {};
+        let orders = [];
+        let orderItemCount = 0;
+        let editingItem = null;
+        let editingOrderId = null;
+
+        // Load data from APIs
+        async function loadData() {
+            console.log('=== LOADING DATA FROM API ===');
+            try {
+                const categoriesRes = await API.getCategories().catch(e => {
+                    console.warn('Categories error:', e);
+                    return [];
+                });
+                const colorsRes = await API.getColors().catch(e => {
+                    console.warn('Colors error:', e);
+                    return [];
+                });
+                const inventoryRes = await API.getInventory().catch(e => {
+                    console.warn('Inventory error:', e);
+                    return [];
+                });
+
+                // Don't load orders on initial load to avoid errors
+                const ordersRes = [];
+
+                categories = Array.isArray(categoriesRes) ? categoriesRes : [];
+                colors = Array.isArray(colorsRes) ? colorsRes : [];
+
+                // Convert inventory array to object by key
+                if (Array.isArray(inventoryRes)) {
+                    inventory = {};
+                    inventoryRes.forEach(item => {
+                        const key = `${item.category}-${item.size}-${item.color}`;
+                        inventory[key] = item;
+                    });
+                } else {
+                    inventory = {};
+                }
+
+                orders = Array.isArray(ordersRes) ? ordersRes : [];
+
+                console.log('✅ Categories:', categories.length);
+                console.log('✅ Colors:', colors.length);
+                console.log('✅ Inventory items:', Object.keys(inventory).length);
+                console.log('✅ Orders:', orders.length);
+                console.log('=== LOAD COMPLETE ===');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                categories = [];
+                colors = [];
+                inventory = {};
+                orders = [];
+            }
+        }
+
+        // Dummy saveData (API calls handle saving now)
+        function saveData() {
+            console.log('Data saved via API');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'dashboard') updateDashboard();
+            else if (tabName === 'categories') updateCategoriesDisplay();
+            else if (tabName === 'colors') updateColorsDisplay();
+            else if (tabName === 'inventory') updateInventoryDisplay();
+            else if (tabName === 'orders') updateOrdersTable();
+            else if (tabName === 'reports') {
+                // Load orders for reports
+                API.getOrders().then(res => {
+                    orders = Array.isArray(res) ? res : [];
+                    updateReports();
+                }).catch(() => {
+                    orders = [];
+                    updateReports();
+                });
+            }
+        }
+
+        // Add Category
+        function addCategory() {
+            const name = document.getElementById('categoryName').value.trim();
+            const sizesStr = document.getElementById('categorySizes').value.trim();
+            const defaultCost = parseFloat(document.getElementById('categoryDefaultCost').value) || 300;
+
+            if (!name || !sizesStr) {
+                showAlert('categoryAlert', 'Please enter category name and sizes', 'danger');
+                return;
+            }
+
+            if (categories.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                showAlert('categoryAlert', 'Category already exists!', 'danger');
+                return;
+            }
+
+            const sizes = sizesStr.split(',').map(s => s.trim()).filter(s => s);
+
+            (async () => {
+                try {
+                    const response = await API.createCategory({
+                        name,
+                        sizes,
+                        defaultCost
+                    });
+
+                    categories.push(response);
+                    updateCategoriesDisplay();
+
+                    document.getElementById('categoryName').value = '';
+                    document.getElementById('categorySizes').value = '';
+                    document.getElementById('categoryDefaultCost').value = '';
+
+                    showAlert('categoryAlert', 'Category added successfully!', 'success');
+                } catch (error) {
+                    showAlert('categoryAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+
+        // Edit Category
+        function editCategory(categoryName) {
+            const category = categories.find(c => c.name === categoryName);
+            if (!category) return;
+
+            document.getElementById('editCategoryName').value = category.name;
+            document.getElementById('editCategorySizes').value = category.sizes.join(', ');
+            document.getElementById('editCategoryDefaultCost').value = category.defaultCost;
+            document.getElementById('editCategoryOldName').value = categoryName;
+
+            const modal = document.getElementById('editCategoryModal');
+            modal.style.display = 'flex';
+        }
+
+        function saveEditCategory() {
+            const oldName = document.getElementById('editCategoryOldName').value;
+            const newName = document.getElementById('editCategoryName').value.trim();
+            const sizes = document.getElementById('editCategorySizes').value.split(',').map(s => s.trim()).filter(s => s);
+            const defaultCost = parseInt(document.getElementById('editCategoryDefaultCost').value) || 0;
+
+            if (!newName || sizes.length === 0) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Check if name already exists (excluding current category)
+            if (newName !== oldName && categories.some(c => c.name === newName)) {
+                alert('Category name already exists');
+                return;
+            }
+
+            const category = categories.find(c => c.name === oldName);
+            if (!category || !category._id) {
+                alert('Error: Category not found');
+                return;
+            }
+
+            (async () => {
+                try {
+                    const response = await API.updateCategory(category._id, {
+                        name: newName,
+                        sizes,
+                        defaultCost
+                    });
+
+                    // Update local category
+                    const categoryIndex = categories.findIndex(c => c.name === oldName);
+                    categories[categoryIndex] = response;
+
+                    updateCategoriesDisplay();
+                    closeEditCategoryModal();
+                    showAlert('categoryAlert', 'Category updated successfully!', 'success');
+                } catch (error) {
+                    showAlert('categoryAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        function closeEditCategoryModal() {
+            document.getElementById('editCategoryModal').style.display = 'none';
+        }
+
+        // Delete Category
+        function deleteCategory(categoryName) {
+            const isUsed = Object.keys(inventory).some(key => key.startsWith(`${categoryName}-`));
+
+            if (isUsed) {
+                if (!confirm(`Warning: This category is used in inventory. Deleting it will also delete all inventory items. Continue?`)) {
+                    return;
+                }
+            }
+
+            if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) {
+                return;
+            }
+
+            const category = categories.find(c => c.name === categoryName);
+            if (!category || !category._id) {
+                showAlert('categoryAlert', 'Error: Category not found', 'danger');
+                return;
+            }
+
+            (async () => {
+                try {
+                    await API.deleteCategory(category._id);
+                    categories = categories.filter(c => c.name !== categoryName);
+                    updateCategoriesDisplay();
+                    showAlert('categoryAlert', 'Category deleted successfully!', 'success');
+                } catch (error) {
+                    showAlert('categoryAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Update Categories Display
+        function updateCategoriesDisplay() {
+            const tableHTML = categories.map(category => {
+                const totalStock = Object.entries(inventory)
+                    .filter(([key]) => key.startsWith(`${category.name}-`))
+                    .reduce((sum, [, data]) => sum + data.stock, 0);
+
+                return `
+                    <tr>
+                        <td><strong>${category.name}</strong></td>
+                        <td>${category.sizes.join(', ')}</td>
+                        <td>Rs. ${category.defaultCost}</td>
+                        <td>${totalStock}</td>
+                        <td>
+                            <button class="btn btn-warning btn-small" onclick="editCategory('${category.name}')">✏️ Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteCategory('${category.name}')">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('categoriesTable').innerHTML = tableHTML || '<tr><td colspan="5" style="text-align:center">No categories added yet</td></tr>';
+            updateDropdowns();
+        }
+
+        // Add Color
+        function addColor() {
+            const name = document.getElementById('colorName').value.trim();
+            const code = document.getElementById('colorCode').value;
+
+            if (!name) {
+                showAlert('colorAlert', 'Please enter color name', 'danger');
+                return;
+            }
+
+            if (colors.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                showAlert('colorAlert', 'Color already exists!', 'danger');
+                return;
+            }
+
+            (async () => {
+                try {
+                    const response = await API.createColor({ name, code });
+                    colors.push(response);
+                    updateColorsDisplay();
+                    document.getElementById('colorName').value = '';
+                    showAlert('colorAlert', 'Color added successfully!', 'success');
+                } catch (error) {
+                    showAlert('colorAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Delete Color
+        function deleteColor(colorName) {
+            if (!confirm(`Are you sure you want to delete "${colorName}"?`)) {
+                return;
+            }
+
+            const color = colors.find(c => c.name === colorName);
+            if (!color || !color._id) {
+                showAlert('colorAlert', 'Error: Color not found', 'danger');
+                return;
+            }
+
+            (async () => {
+                try {
+                    await API.deleteColor(color._id);
+                    colors = colors.filter(c => c.name !== colorName);
+                    updateColorsDisplay();
+                    showAlert('colorAlert', 'Color deleted successfully!', 'success');
+                } catch (error) {
+                    showAlert('colorAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Update Colors Display
+        function updateColorsDisplay() {
+            // Color badges
+            const colorsList = colors.map(color => `
+                <div class="color-item">
+                    <div style="width: 30px; height: 30px; background: ${color.code}; border-radius: 50%; border: 2px solid #ddd;"></div>
+                    <span>${color.name}</span>
+                </div>
+            `).join('');
+            document.getElementById('colorsList').innerHTML = colorsList;
+
+            // Colors table
+            const colorsTable = colors.map(color => {
+                const totalStock = Object.entries(inventory)
+                    .filter(([key]) => key.includes(`-${color.name}`))
+                    .reduce((sum, [, data]) => sum + data.stock, 0);
+
+                return `
+                    <tr>
+                        <td>${color.name}</td>
+                        <td><div style="width: 40px; height: 40px; background: ${color.code}; border-radius: 8px; border: 2px solid #ddd;"></div></td>
+                        <td>${totalStock}</td>
+                        <td>
+                            <button class="btn btn-danger btn-small" onclick="deleteColor('${color.name}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('colorsTable').innerHTML = colorsTable || '<tr><td colspan="4" style="text-align:center">No colors added yet</td></tr>';
+
+            // Update all dropdowns
+            updateDropdowns();
+        }
+
+        // Update all dropdowns
+        function updateDropdowns() {
+            const categoryOptions = categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            const colorOptions = colors.map(color => `<option value="${color.name}">${color.name}</option>`).join('');
+
+            document.getElementById('invCategory').innerHTML = '<option value="">Select Category</option>' + categoryOptions;
+            document.getElementById('filterCategory').innerHTML = '<option value="">All Categories</option>' + categoryOptions;
+            
+            document.getElementById('invColor').innerHTML = '<option value="">Select Color</option>' + colorOptions;
+            document.getElementById('filterColor').innerHTML = '<option value="">All Colors</option>' + colorOptions;
+            
+            // Update size dropdowns based on all sizes
+            updateAllSizesDropdown();
+        }
+
+        // Update size dropdown based on selected category
+        function updateSizeDropdown() {
+            const selectedCategory = document.getElementById('invCategory').value;
+            const sizeDropdown = document.getElementById('invSize');
+            
+            if (!selectedCategory) {
+                sizeDropdown.innerHTML = '<option value="">Select Category First</option>';
+                return;
+            }
+
+            const category = categories.find(c => c.name === selectedCategory);
+            if (category) {
+                const sizeOptions = category.sizes.map(size => `<option value="${size}">${size}</option>`).join('');
+                sizeDropdown.innerHTML = '<option value="">Select Size</option>' + sizeOptions;
+            }
+        }
+
+        // Update filter size dropdown with all available sizes
+        function updateAllSizesDropdown() {
+            const allSizes = new Set();
+            categories.forEach(cat => {
+                cat.sizes.forEach(size => allSizes.add(size));
+            });
+            
+            const sortedSizes = Array.from(allSizes).sort((a, b) => parseInt(a) - parseInt(b));
+            const sizeOptions = sortedSizes.map(size => `<option value="${size}">${size}</option>`).join('');
+            
+            document.getElementById('filterSize').innerHTML = '<option value="">All Sizes</option>' + sizeOptions;
+        }
+
+        // Update Inventory
+        function updateInventory() {
+            const categoryName = document.getElementById('invCategory').value;
+            const size = document.getElementById('invSize').value;
+            const color = document.getElementById('invColor').value;
+            const action = document.getElementById('invAction').value;
+            const quantity = parseInt(document.getElementById('invQuantity').value);
+            const dateAdded = document.getElementById('invDate').value || new Date().toISOString().split('T')[0];
+
+            if (!categoryName || !size || !color) {
+                showAlert('invAlert', 'Please select category, size and color', 'danger');
+                return;
+            }
+
+            if (!quantity || quantity < 0) {
+                showAlert('invAlert', 'Please enter valid quantity', 'danger');
+                return;
+            }
+
+            const key = `${categoryName}-${size}-${color}`;
+            const category = categories.find(c => c.name === categoryName);
+            const existingItem = inventory[key];
+
+            let stock = quantity;
+            if (action === 'add' && existingItem) {
+                stock = existingItem.stock + quantity;
+            } else if (action === 'remove' && existingItem) {
+                if (existingItem.stock < quantity) {
+                    showAlert('invAlert', 'Insufficient stock!', 'danger');
+                    return;
+                }
+                stock = existingItem.stock - quantity;
+            }
+
+            const inventoryData = {
+                category: categoryName,
+                size,
+                color,
+                stock,
+                costPrice: existingItem?.costPrice || category.defaultCost,
+                sellingPrice: existingItem?.sellingPrice || category.defaultSell,
+                dateAdded: existingItem?.dateAdded || dateAdded
+            };
+
+            (async () => {
+                try {
+                    if (existingItem && existingItem._id) {
+                        await API.updateInventory(existingItem._id, inventoryData);
+                    } else {
+                        await API.createOrUpdateInventory(inventoryData);
+                    }
+
+                    // Update local inventory
+                    inventory[key] = { ...inventoryData };
+                    updateInventoryDisplay();
+                    showAlert('invAlert', 'Inventory updated successfully!', 'success');
+                    document.getElementById('invQuantity').value = '';
+                    document.getElementById('invDate').value = '';
+                } catch (error) {
+                    showAlert('invAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Update Inventory Display
+        function updateInventoryDisplay() {
+            filterInventory();
+        }
+
+        // Filter Inventory
+        function filterInventory() {
+            const filterCategory = document.getElementById('filterCategory').value;
+            const filterSize = document.getElementById('filterSize').value;
+            const filterColor = document.getElementById('filterColor').value;
+
+            let filteredInventory = Object.entries(inventory);
+
+            if (filterCategory) {
+                filteredInventory = filteredInventory.filter(([key]) => key.startsWith(filterCategory + '-'));
+            }
+
+            if (filterSize) {
+                filteredInventory = filteredInventory.filter(([key]) => {
+                    const parts = key.split('-');
+                    return parts[1] === filterSize;
+                });
+            }
+
+            if (filterColor) {
+                filteredInventory = filteredInventory.filter(([key]) => key.endsWith('-' + filterColor));
+            }
+
+            const totalItems = filteredInventory.reduce((sum, [, data]) => sum + data.stock, 0);
+            document.getElementById('totalItems').textContent = totalItems;
+
+            const tableHTML = filteredInventory.map(([key, data]) => {
+                const parts = key.split('-');
+                const category = parts[0];
+                const size = parts[1];
+                const color = parts[2];
+                const totalValue = data.stock * data.sellingPrice;
+                const colorObj = colors.find(c => c.name === color);
+
+                return `
+                    <tr>
+                        <td><strong>${category}</strong></td>
+                        <td>${size}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 25px; height: 25px; background: ${colorObj?.code || '#ccc'}; border-radius: 50%; border: 2px solid #ddd;"></div>
+                                ${color}
+                            </div>
+                        </td>
+                        <td ${data.stock < 5 ? 'class="low-stock"' : ''}>${data.stock}</td>
+                        <td>Rs. ${data.costPrice}</td>
+                        <td>Rs. ${data.sellingPrice}</td>
+                        <td>Rs. ${totalValue.toLocaleString()}</td>
+                        <td>${data.dateAdded ? new Date(data.dateAdded).toLocaleDateString() : '-'}</td>
+                        <td>
+                            <button class="btn btn-warning btn-small" onclick="editInventoryItem('${key}')">✏️ Edit</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('inventoryTable').innerHTML = tableHTML || '<tr><td colspan="9" style="text-align:center">No inventory items</td></tr>';
+        }
+
+        // Edit Inventory Item
+        function editInventoryItem(key) {
+            console.log('Edit clicked for key:', key);
+            console.log('Current inventory:', inventory);
+            
+            editingItem = key;
+            const parts = key.split('-');
+            
+            console.log('Key parts:', parts);
+            
+            // Check if valid key
+            if (parts.length < 3) {
+                alert('Invalid inventory item! Key: ' + key);
+                return;
+            }
+            
+            const category = parts[0];
+            const size = parts[1];
+            const color = parts[2];
+            const data = inventory[key];
+
+            console.log('Extracted data:', { category, size, color, data });
+
+            // Check if data exists
+            if (!data) {
+                alert('Inventory data not found for: ' + key);
+                return;
+            }
+
+            // Set values
+            const editSizeField = document.getElementById('editSize');
+            const editColorField = document.getElementById('editColor');
+            const editStockField = document.getElementById('editStock');
+            const editCostField = document.getElementById('editCost');
+            const editSellingField = document.getElementById('editSelling');
+
+            const editDateField = document.getElementById('editDateAdded');
+
+            if (editSizeField) editSizeField.value = `${category} - Size ${size}`;
+            if (editColorField) editColorField.value = color;
+            if (editStockField) editStockField.value = data.stock || 0;
+            if (editCostField) editCostField.value = data.costPrice || 0;
+            if (editSellingField) editSellingField.value = data.sellingPrice || 0;
+            if (editDateField) editDateField.value = data.dateAdded ? new Date(data.dateAdded).toISOString().split('T')[0] : '';
+
+            // Show modal
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.classList.add('active');
+                console.log('Modal should be visible now');
+            } else {
+                console.error('Edit modal not found!');
+                alert('Error: Modal element not found!');
+            }
+        }
+
+        // Save Edit
+        function saveEdit() {
+            if (!editingItem) return;
+
+            const stock = parseInt(document.getElementById('editStock').value) || 0;
+            const cost = parseFloat(document.getElementById('editCost').value) || 0;
+            const selling = parseFloat(document.getElementById('editSelling').value) || 0;
+            const dateAdded = document.getElementById('editDateAdded').value;
+
+            if (stock < 0) {
+                alert('Stock cannot be negative!');
+                return;
+            }
+
+            if (cost < 0 || selling < 0) {
+                alert('Prices cannot be negative!');
+                return;
+            }
+
+            const existingItem = inventory[editingItem];
+            const updatedData = {
+                ...existingItem,
+                stock,
+                costPrice: cost,
+                sellingPrice: selling,
+                dateAdded: dateAdded || existingItem?.dateAdded
+            };
+
+            (async () => {
+                try {
+                    if (existingItem && existingItem._id) {
+                        await API.updateInventory(existingItem._id, updatedData);
+                    }
+                    inventory[editingItem] = updatedData;
+                    closeEditModal();
+                    updateInventoryDisplay();
+                    alert('✅ Item updated successfully!');
+                } catch (error) {
+                    alert(`❌ Error saving: ${error.message}`);
+                }
+            })();
+        }
+
+        // Delete Item
+        function deleteItem() {
+            console.log('Delete Item called');
+            console.log('Editing item:', editingItem);
+            
+            if (!editingItem) {
+                alert('No item selected to delete!');
+                return;
+            }
+
+            const parts = editingItem.split('-');
+            if (parts.length < 3) {
+                alert('Invalid item format!');
+                return;
+            }
+
+            const category = parts[0];
+            const size = parts[1];
+            const color = parts[2];
+            
+            const confirmMsg = `Delete this item?\n\nCategory: ${category}\nSize: ${size}\nColor: ${color}\n\nThis action cannot be undone!`;
+            
+            if (confirm(confirmMsg)) {
+                console.log('User confirmed deletion');
+                
+                // Check if item exists
+                if (inventory[editingItem]) {
+                    console.log('Deleting item:', editingItem);
+                    delete inventory[editingItem];
+                    saveData();
+                    closeEditModal();
+                    updateInventoryDisplay();
+                    alert('✅ Item deleted successfully!');
+                    console.log('Item deleted');
+                } else {
+                    alert('❌ Item not found in inventory!');
+                    console.error('Item not in inventory:', editingItem);
+                }
+            } else {
+                console.log('User cancelled deletion');
+            }
+        }
+
+        // Close Edit Modal
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            editingItem = null;
+        }
+
+        // Show Bulk Update Modal
+        function showBulkUpdateModal() {
+            updateDropdowns();
+            document.getElementById('bulkModal').classList.add('active');
+            
+            document.getElementById('bulkUpdateBy').addEventListener('change', function() {
+                const value = this.value;
+                document.getElementById('bulkSizeGroup').style.display = value === 'size' || value === 'all' ? 'flex' : 'none';
+                document.getElementById('bulkColorGroup').style.display = value === 'color' ? 'flex' : 'none';
+            });
+        }
+
+        // Close Bulk Modal
+        function closeBulkModal() {
+            document.getElementById('bulkModal').classList.remove('active');
+        }
+
+        // Apply Bulk Update
+        function applyBulkUpdate() {
+            const updateBy = document.getElementById('bulkUpdateBy').value;
+            const size = document.getElementById('bulkSize').value;
+            const color = document.getElementById('bulkColor').value;
+            const cost = document.getElementById('bulkCost').value;
+            const selling = document.getElementById('bulkSelling').value;
+
+            if (!cost && !selling) {
+                alert('Please enter at least one price to update');
+                return;
+            }
+
+            let updated = 0;
+
+            Object.keys(inventory).forEach(key => {
+                let shouldUpdate = false;
+
+                if (updateBy === 'all') {
+                    shouldUpdate = true;
+                } else if (updateBy === 'size') {
+                    shouldUpdate = key.startsWith(size + '-');
+                } else if (updateBy === 'color') {
+                    shouldUpdate = key.endsWith('-' + color);
+                }
+
+                if (shouldUpdate) {
+                    if (cost) inventory[key].costPrice = parseFloat(cost);
+                    if (selling) inventory[key].sellingPrice = parseFloat(selling);
+                    updated++;
+                }
+            });
+
+            saveData();
+            closeBulkModal();
+            updateInventoryDisplay();
+            alert(`${updated} items updated successfully!`);
+        }
+
+        // Add Order Item
+        function addOrderItem() {
+            orderItemCount++;
+            const categoryOptions = categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            const colorOptions = colors.map(color => `<option value="${color.name}">${color.name}</option>`).join('');
+
+            const itemHTML = `
+                <div class="order-item-row" id="orderItem${orderItemCount}">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px;">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="itemCategory${orderItemCount}" onchange="updateOrderItemSizes(${orderItemCount})">${categoryOptions}</select>
+                        </div>
+                        <div class="form-group">
+                            <label>Size</label>
+                            <select id="itemSize${orderItemCount}">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 80px auto; gap:8px; align-items:end;">
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select id="itemColor${orderItemCount}">${colorOptions}</select>
+                        </div>
+                        <div class="form-group">
+                            <label>Qty</label>
+                            <input type="number" id="itemQty${orderItemCount}" min="1" value="1">
+                        </div>
+                        <button class="btn btn-danger btn-small" onclick="removeOrderItem(${orderItemCount})" style="margin-bottom:0;">✕</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('orderItems').insertAdjacentHTML('beforeend', itemHTML);
+
+            if (categories.length > 0) {
+                updateOrderItemSizes(orderItemCount);
+            }
+        }
+
+        // Update order item sizes based on selected category
+        function updateOrderItemSizes(itemId) {
+            const categorySelect = document.getElementById(`itemCategory${itemId}`);
+            const sizeSelect = document.getElementById(`itemSize${itemId}`);
+            
+            const selectedCategory = categorySelect.value;
+            const category = categories.find(c => c.name === selectedCategory);
+            
+            if (category) {
+                const sizeOptions = category.sizes.map(size => `<option value="${size}">${size}</option>`).join('');
+                sizeSelect.innerHTML = sizeOptions;
+            }
+        }
+
+        // Remove Order Item
+        function removeOrderItem(id) {
+            document.getElementById(`orderItem${id}`).remove();
+        }
+
+        // Create Order
+        function createOrder() {
+            const customerName = document.getElementById('customerName').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+            const customerAddress = document.getElementById('customerAddress').value;
+            const orderDate = document.getElementById('orderDate').value || new Date().toISOString().split('T')[0];
+            const deliveryCharges = parseFloat(document.getElementById('deliveryCharges').value) || 0;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            if (!customerName) {
+                showAlert('orderAlert', 'Please enter customer name', 'danger');
+                return;
+            }
+
+            const items = [];
+            let sellPrice = 0;
+            let actualCost = 0;
+
+            for (let i = 1; i <= orderItemCount; i++) {
+                const categoryEl = document.getElementById(`itemCategory${i}`);
+                const sizeEl = document.getElementById(`itemSize${i}`);
+                const colorEl = document.getElementById(`itemColor${i}`);
+                const qtyEl = document.getElementById(`itemQty${i}`);
+
+                if (categoryEl && sizeEl && colorEl && qtyEl) {
+                    const category = categoryEl.value;
+                    const size = sizeEl.value;
+                    const color = colorEl.value;
+                    const qty = parseInt(qtyEl.value);
+                    const key = `${category}-${size}-${color}`;
+
+                    if (!inventory[key] || inventory[key].stock < qty) {
+                        showAlert('orderAlert', `Insufficient stock for ${category} - Size ${size} - ${color}!`, 'danger');
+                        return;
+                    }
+
+                    const itemSellPrice = inventory[key].sellingPrice * qty;
+                    const itemCost = inventory[key].costPrice * qty;
+
+                    items.push({
+                        category,
+                        size,
+                        color,
+                        quantity: qty,
+                        sellPrice: itemSellPrice,
+                        costPrice: itemCost,
+                        unitCost: inventory[key].costPrice,
+                        unitSell: inventory[key].sellingPrice
+                    });
+
+                    sellPrice += itemSellPrice;
+                    actualCost += itemCost;
+                }
+            }
+
+            if (items.length === 0) {
+                showAlert('orderAlert', 'Please add at least one item', 'danger');
+                return;
+            }
+
+            // Calculate COD tax (4% on COD orders only)
+            const codTax = paymentMethod === 'COD' ? (sellPrice * 0.04) : 0;
+
+            // Calculate total (sell price + COD tax + delivery)
+            const total = sellPrice + codTax + deliveryCharges;
+
+            // Calculate profit (sell price - actual cost - delivery - COD tax)
+            const profit = sellPrice - actualCost - deliveryCharges - codTax;
+
+            const orderData = {
+                customerName,
+                customerPhone,
+                customerAddress,
+                date: orderDate,
+                items,
+                actualCost,
+                sellPrice,
+                codTax,
+                deliveryCharges,
+                paymentMethod,
+                total,
+                profit,
+                status: 'Pending'
+            };
+
+            (async () => {
+                try {
+                    const response = await API.createOrder(orderData);
+                    orders.push(response);
+
+                    // Update inventory stock for each item
+                    for (const item of items) {
+                        const key = `${item.category}-${item.size}-${item.color}`;
+                        if (inventory[key]) {
+                            const updatedInventory = {
+                                ...inventory[key],
+                                stock: inventory[key].stock - item.quantity
+                            };
+                            if (inventory[key]._id) {
+                                await API.updateInventory(inventory[key]._id, updatedInventory);
+                            }
+                            inventory[key].stock = updatedInventory.stock;
+                        }
+                    }
+
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerPhone').value = '';
+                    document.getElementById('customerAddress').value = '';
+                    document.getElementById('deliveryCharges').value = '250';
+                    document.getElementById('paymentMethod').value = 'COD';
+                    document.getElementById('orderItems').innerHTML = '';
+                    orderItemCount = 0;
+
+                    showAlert('orderAlert', `Order created successfully! Total: Rs. ${total.toLocaleString()}`, 'success');
+                    updateOrdersTable();
+                    updateInventoryDisplay();
+                } catch (error) {
+                    showAlert('orderAlert', `Error creating order: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Update Orders Table
+        function updateOrdersTable() {
+            const tableHTML = orders.map(order => {
+                let statusColor = '#ffc107';
+                if (order.status === 'Dispatched') statusColor = '#17a2b8';
+                if (order.status === 'Completed') statusColor = '#28a745';
+                if (order.status === 'Returned') statusColor = '#dc3545';
+
+                const total = order.total || 0;
+                const profit = order.profit || 0;
+
+                return `
+                    <tr>
+                        <td><strong>#${order.orderId || ''}</strong></td>
+                        <td>
+                            <strong>${order.customerName}</strong><br>
+                            <small style="color:#888;">${order.customerPhone || ''}</small>
+                        </td>
+                        <td style="text-align:center;">${order.items ? order.items.length : 0}</td>
+                        <td><strong>Rs. ${total.toLocaleString()}</strong></td>
+                        <td style="color:${profit >= 0 ? '#28a745' : '#dc3545'}; font-weight:bold;">
+                            Rs. ${profit.toFixed(0)}
+                        </td>
+                        <td>
+                            <select onchange="changeOrderStatus('${order._id}', this.value)" style="padding:4px 6px; border-radius:5px; border:2px solid ${statusColor}; color:${statusColor}; font-weight:bold; background:white; font-size:12px;">
+                                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Dispatched" ${order.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
+                                <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Returned" ${order.status === 'Returned' ? 'selected' : ''}>Returned</option>
+                            </select>
+                        </td>
+                        <td>${new Date(order.date).toLocaleDateString('en-PK')}</td>
+                        <td>
+                            <div class="order-actions-row">
+                                <button class="btn btn-primary btn-small" onclick="viewOrder('${order._id}')" title="View">👁️</button>
+                                <button class="btn btn-warning btn-small" onclick="editOrder('${order._id}')" title="Edit">✏️</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteOrder('${order._id}')" title="Delete">🗑️</button>
+                                <button class="btn btn-success btn-small" onclick="printInvoice('${order._id}')" title="Print">🖨️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById('ordersTable').innerHTML = tableHTML || '<tr><td colspan="8" style="text-align:center; padding:30px; color:#999;">Koi order nahi hai</td></tr>';
+        }
+
+        // Change Order Status
+        function changeOrderStatus(orderId, newStatus) {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) {
+                showAlert('orderAlert', 'Order not found', 'danger');
+                return;
+            }
+
+            const apiId = order._id;
+
+            (async () => {
+                try {
+                    await API.updateOrderStatus(apiId, newStatus);
+
+                    // Update local order
+                    const orderToUpdate = orders.find(o => o._id === apiId);
+                    if (orderToUpdate) {
+                        const oldStatus = orderToUpdate.status;
+                        orderToUpdate.status = newStatus;
+
+                        // If changing to Returned, restore inventory
+                        if (newStatus === 'Returned' && (oldStatus === 'Completed' || oldStatus === 'Dispatched')) {
+                            if (orderToUpdate.items && orderToUpdate.items.length > 0) {
+                                for (const item of orderToUpdate.items) {
+                                    const key = `${item.category}-${item.size}-${item.color}`;
+                                    if (inventory[key]) {
+                                        const updated = {
+                                            ...inventory[key],
+                                            stock: inventory[key].stock + item.quantity
+                                        };
+                                        if (inventory[key]._id) {
+                                            await API.updateInventory(inventory[key]._id, updated);
+                                        }
+                                        inventory[key].stock = updated.stock;
+                                    }
+                                }
+                            }
+                        }
+
+                        updateOrdersTable();
+                        updateDashboard();
+                        updateInventoryDisplay();
+                        showAlert('orderAlert', `Order status changed to ${newStatus}`, 'success');
+                    }
+                } catch (error) {
+                    showAlert('orderAlert', `Error: ${error.message}`, 'danger');
+                }
+            })();
+        }
+
+        // Mark Completed
+        function markCompleted(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (order) {
+                order.status = 'Completed';
+                saveData();
+                updateOrdersTable();
+            }
+        }
+
+        // View Order
+        function viewOrder(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (order) {
+                const itemsDetails = order.items.map(item => {
+                    // Handle old orders without category
+                    const category = item.category || 'N/A';
+                    const unitCost = item.unitCost || 0;
+                    const unitSell = item.unitSell || 0;
+                    const costPrice = item.costPrice || 0;
+                    const sellPrice = item.sellPrice || item.price || 0;
+                    
+                    return `${category} - Size ${item.size} - ${item.color} x${item.quantity}\n  Unit Cost: Rs. ${unitCost} | Unit Sell: Rs. ${unitSell}\n  Total Cost: Rs. ${costPrice} | Total Sell: Rs. ${sellPrice}`;
+                }).join('\n\n');
+                
+                const actualCost = order.actualCost || 0;
+                const sellPrice = order.sellPrice || order.total || 0;
+                const codTax = order.codTax || 0;
+                const deliveryCharges = order.deliveryCharges || 0;
+                const total = order.total || 0;
+                const profit = order.profit || 0;
+                const paymentMethod = order.paymentMethod || 'N/A';
+                
+                alert(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ORDER #${order.id}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CUSTOMER DETAILS:
+Name: ${order.customerName}
+Phone: ${order.customerPhone || 'N/A'}
+Address: ${order.customerAddress || 'N/A'}
+Date: ${new Date(order.date).toLocaleDateString()}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 ITEMS:
+
+${itemsDetails}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 FINANCIAL BREAKDOWN:
+
+Actual Cost (Total): Rs. ${actualCost.toLocaleString()}
+Selling Price (Total): Rs. ${sellPrice.toLocaleString()}
+${paymentMethod === 'COD' ? `COD Tax (4%): Rs. ${codTax.toFixed(2)}` : 'Payment Method: Prepaid (No COD Tax)'}
+Delivery Charges: Rs. ${deliveryCharges}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GRAND TOTAL: Rs. ${total.toLocaleString()}
+NET PROFIT: Rs. ${profit.toFixed(2)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ${order.status}`);
+            }
+        }
+
+        // Print Invoice
+        function printInvoice(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) return;
+
+            const itemsHTML = order.items.map(item => {
+                const category = item.category || 'N/A';
+                const unitSell = item.unitSell || item.price || 0;
+                const sellPrice = item.sellPrice || item.price || 0;
+                
+                return `
+                    <tr>
+                        <td>${category} - Size ${item.size} - ${item.color}</td>
+                        <td style="text-align: center;">${item.quantity}</td>
+                        <td style="text-align: right;">Rs. ${unitSell}</td>
+                        <td style="text-align: right;">Rs. ${sellPrice}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const sellPrice = order.sellPrice || order.total || 0;
+            const codTax = order.codTax || 0;
+            const deliveryCharges = order.deliveryCharges || 0;
+            const total = order.total || 0;
+            const paymentMethod = order.paymentMethod || 'N/A';
+
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Invoice #${order.id}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 30px;
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .header {
+                            text-align: center;
+                            border-bottom: 3px solid #667eea;
+                            padding-bottom: 20px;
+                            margin-bottom: 30px;
+                        }
+                        h1 { 
+                            color: #667eea; 
+                            margin-bottom: 5px;
+                        }
+                        .invoice-info {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 30px;
+                        }
+                        .customer-details, .invoice-details {
+                            width: 48%;
+                        }
+                        table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin-top: 20px; 
+                        }
+                        th, td { 
+                            border: 1px solid #ddd; 
+                            padding: 12px; 
+                            text-align: left; 
+                        }
+                        th { 
+                            background: #f8f9fa;
+                            font-weight: bold;
+                        }
+                        .totals {
+                            margin-top: 20px;
+                            text-align: right;
+                        }
+                        .totals table {
+                            margin-left: auto;
+                            width: 300px;
+                        }
+                        .grand-total {
+                            background: #667eea;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 18px;
+                        }
+                        .footer {
+                            margin-top: 50px;
+                            text-align: center;
+                            color: #666;
+                            border-top: 2px solid #ddd;
+                            padding-top: 20px;
+                        }
+                        @media print {
+                            body { padding: 20px; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>INVOICE</h1>
+                        <p style="font-size: 14px; color: #666;">Invoice #${order.id}</p>
+                    </div>
+
+                    <div class="invoice-info">
+                        <div class="customer-details">
+                            <h3 style="color: #667eea;">Bill To:</h3>
+                            <p><strong>${order.customerName}</strong></p>
+                            <p>${order.customerPhone || 'N/A'}</p>
+                            <p>${order.customerAddress || 'N/A'}</p>
+                        </div>
+                        <div class="invoice-details">
+                            <h3 style="color: #667eea;">Invoice Details:</h3>
+                            <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> ${order.status}</p>
+                            <p><strong>Payment:</strong> ${paymentMethod}</p>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th style="text-align: center;">Quantity</th>
+                                <th style="text-align: right;">Unit Price</th>
+                                <th style="text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHTML}
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <table>
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td style="text-align: right;"><strong>Rs. ${sellPrice.toLocaleString()}</strong></td>
+                            </tr>
+                            ${paymentMethod === 'COD' ? `
+                            <tr>
+                                <td>COD Tax (4%):</td>
+                                <td style="text-align: right;"><strong>Rs. ${codTax.toFixed(2)}</strong></td>
+                            </tr>
+                            ` : ''}
+                            <tr>
+                                <td>Delivery Charges:</td>
+                                <td style="text-align: right;"><strong>Rs. ${deliveryCharges}</strong></td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td>GRAND TOTAL:</td>
+                                <td style="text-align: right;"><strong>Rs. ${total.toLocaleString()}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="footer">
+                        <p>Thank you for your business!</p>
+                        <p style="font-size: 12px;">This is a computer-generated invoice.</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Mark Completed
+        function markCompleted(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (order) {
+                order.status = 'Completed';
+                saveData();
+                updateOrdersTable();
+            }
+        }
+
+        // View Order
+        function viewOrder(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (order) {
+                const itemsDetails = order.items.map(item => 
+                    `Size ${item.size} - ${item.color} x${item.quantity}\n  Unit Cost: Rs. ${item.unitCost} | Unit Sell: Rs. ${item.unitSell}\n  Total Cost: Rs. ${item.costPrice} | Total Sell: Rs. ${item.sellPrice}`
+                ).join('\n\n');
+                
+                alert(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ORDER #${order.id}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CUSTOMER DETAILS:
+Name: ${order.customerName}
+Phone: ${order.customerPhone || 'N/A'}
+Address: ${order.customerAddress || 'N/A'}
+Date: ${new Date(order.date).toLocaleDateString()}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 ITEMS:
+
+${itemsDetails}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 FINANCIAL BREAKDOWN:
+
+Actual Cost (Total): Rs. ${order.actualCost.toLocaleString()}
+Selling Price (Total): Rs. ${order.sellPrice.toLocaleString()}
+${order.paymentMethod === 'COD' ? `COD Tax (4%): Rs. ${order.codTax.toFixed(2)}` : 'Payment Method: Prepaid (No COD Tax)'}
+Delivery Charges: Rs. ${order.deliveryCharges}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GRAND TOTAL: Rs. ${order.total.toLocaleString()}
+NET PROFIT: Rs. ${order.profit.toFixed(2)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Status: ${order.status}`);
+            }
+        }
+
+        // Print Invoice
+        function printInvoice(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) return;
+
+            const itemsHTML = order.items.map(item => `
+                <tr>
+                    <td>Size ${item.size} - ${item.color}</td>
+                    <td style="text-align: center;">${item.quantity}</td>
+                    <td style="text-align: right;">Rs. ${item.unitSell}</td>
+                    <td style="text-align: right;">Rs. ${item.sellPrice}</td>
+                </tr>
+            `).join('');
+
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Invoice #${order.id}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 30px;
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .header {
+                            text-align: center;
+                            border-bottom: 3px solid #667eea;
+                            padding-bottom: 20px;
+                            margin-bottom: 30px;
+                        }
+                        h1 { 
+                            color: #667eea; 
+                            margin-bottom: 5px;
+                        }
+                        .invoice-info {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 30px;
+                        }
+                        .customer-details, .invoice-details {
+                            width: 48%;
+                        }
+                        table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin-top: 20px; 
+                        }
+                        th, td { 
+                            border: 1px solid #ddd; 
+                            padding: 12px; 
+                            text-align: left; 
+                        }
+                        th { 
+                            background: #f8f9fa;
+                            font-weight: bold;
+                        }
+                        .totals {
+                            margin-top: 20px;
+                            text-align: right;
+                        }
+                        .totals table {
+                            margin-left: auto;
+                            width: 300px;
+                        }
+                        .grand-total {
+                            background: #667eea;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 18px;
+                        }
+                        .footer {
+                            margin-top: 50px;
+                            text-align: center;
+                            color: #666;
+                            border-top: 2px solid #ddd;
+                            padding-top: 20px;
+                        }
+                        @media print {
+                            body { padding: 20px; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>INVOICE</h1>
+                        <p style="font-size: 14px; color: #666;">Invoice #${order.id}</p>
+                    </div>
+
+                    <div class="invoice-info">
+                        <div class="customer-details">
+                            <h3 style="color: #667eea;">Bill To:</h3>
+                            <p><strong>${order.customerName}</strong></p>
+                            <p>${order.customerPhone || 'N/A'}</p>
+                            <p>${order.customerAddress || 'N/A'}</p>
+                        </div>
+                        <div class="invoice-details">
+                            <h3 style="color: #667eea;">Invoice Details:</h3>
+                            <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> ${order.status}</p>
+                            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th style="text-align: center;">Quantity</th>
+                                <th style="text-align: right;">Unit Price</th>
+                                <th style="text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHTML}
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <table>
+                            <tr>
+                                <td>Subtotal:</td>
+                                <td style="text-align: right;"><strong>Rs. ${order.sellPrice.toLocaleString()}</strong></td>
+                            </tr>
+                            ${order.paymentMethod === 'COD' ? `
+                            <tr>
+                                <td>COD Tax (4%):</td>
+                                <td style="text-align: right;"><strong>Rs. ${order.codTax.toFixed(2)}</strong></td>
+                            </tr>
+                            ` : ''}
+                            <tr>
+                                <td>Delivery Charges:</td>
+                                <td style="text-align: right;"><strong>Rs. ${order.deliveryCharges}</strong></td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td>GRAND TOTAL:</td>
+                                <td style="text-align: right;"><strong>Rs. ${order.total.toLocaleString()}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="footer">
+                        <p>Thank you for your business!</p>
+                        <p style="font-size: 12px;">This is a computer-generated invoice.</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Filter Orders
+        function filterOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            const totalStock = Object.values(inventory).reduce((sum, data) => sum + (data.stock || 0), 0);
+            const totalOrders = orders.length;
+            const completedOrders = orders.filter(o => o.status === 'Completed');
+            const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+            const totalProfit = completedOrders.reduce((sum, order) => sum + (order.profit || 0), 0);
+            const inventoryValue = Object.values(inventory).reduce((sum, data) => 
+                sum + ((data.stock || 0) * (data.sellingPrice || 0)), 0
+            );
+
+            const statsGridElement = document.getElementById('statsGrid');
+            if (statsGridElement) {
+                statsGridElement.innerHTML = `
+                    <div class="stat-card">
+                        <h3>Total Stock</h3>
+                        <div class="value">${totalStock}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <div class="value">${totalOrders}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue (Completed)</h3>
+                        <div class="value">Rs. ${totalRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Profit (Completed)</h3>
+                        <div class="value">Rs. ${totalProfit.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+
+            // Size summary
+            const sizeSummary = {};
+            Object.entries(inventory).forEach(([key, data]) => {
+                const parts = key.split('-');
+                if (parts.length < 2) return; // Skip invalid keys
+                
+                const size = parts[1];
+                if (!sizeSummary[size]) {
+                    sizeSummary[size] = { stock: 0, colors: new Set(), value: 0 };
+                }
+                sizeSummary[size].stock += (data.stock || 0);
+                if (parts[2]) sizeSummary[size].colors.add(parts[2]);
+                sizeSummary[size].value += ((data.stock || 0) * (data.sellingPrice || 0));
+            });
+
+            const sizeSummaryHTML = Object.entries(sizeSummary)
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                .map(([size, data]) => `
+                    <tr>
+                        <td>Size ${size}</td>
+                        <td>${data.stock}</td>
+                        <td>${data.colors.size} colors</td>
+                        <td>Rs. ${data.value.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            
+            const sizeSummaryElement = document.getElementById('sizeSummaryTable');
+            if (sizeSummaryElement) {
+                sizeSummaryElement.innerHTML = sizeSummaryHTML || '<tr><td colspan="4" style="text-align:center">No inventory</td></tr>';
+            }
+
+            // Low stock
+            const lowStockHTML = Object.entries(inventory)
+                .filter(([, data]) => (data.stock || 0) < 5 && (data.stock || 0) > 0)
+                .map(([key, data]) => {
+                    const parts = key.split('-');
+                    if (parts.length < 3) return '';
+                    const size = parts[1];
+                    const color = parts[2];
+                    return `
+                        <tr>
+                            <td>${size}</td>
+                            <td>${color}</td>
+                            <td class="low-stock">${data.stock || 0}</td>
+                            <td>
+                                <button class="btn btn-primary btn-small" onclick="quickRestock('${key}')">Restock</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            
+            const lowStockElement = document.getElementById('lowStockTable');
+            if (lowStockElement) {
+                lowStockElement.innerHTML = lowStockHTML || '<tr><td colspan="4" style="text-align:center">All stock levels healthy</td></tr>';
+            }
+        }
+
+        // Quick Restock
+        function quickRestock(key) {
+            const qty = prompt('Enter quantity to add:');
+            if (qty && parseInt(qty) > 0) {
+                inventory[key].stock += parseInt(qty);
+                saveData();
+                updateDashboard();
+            }
+        }
+
+        // Update Reports
+        function updateReports() {
+            const totalStock = Object.values(inventory).reduce((sum, data) => sum + (data.stock || 0), 0);
+            const totalOrders = orders.length;
+            const totalRevenue = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + (order.total || 0), 0);
+            const totalProfit = orders.filter(o => o.status === 'Completed').reduce((sum, order) => sum + (order.profit || 0), 0);
+            const inventoryValue = Object.values(inventory).reduce((sum, data) =>
+                sum + ((data.stock || 0) * (data.sellingPrice || 0)), 0
+            );
+
+            const totalStockElement = document.getElementById('totalStockItems');
+            const totalOrdersElement = document.getElementById('totalOrders');
+            const totalRevenueElement = document.getElementById('totalRevenue');
+            const inventoryValueElement = document.getElementById('inventoryValue');
+
+            if (totalStockElement) totalStockElement.textContent = totalStock;
+            if (totalOrdersElement) totalOrdersElement.textContent = totalOrders;
+            if (totalRevenueElement) totalRevenueElement.textContent = `Rs. ${totalRevenue.toLocaleString()}`;
+            if (inventoryValueElement) inventoryValueElement.textContent = `Rs. ${inventoryValue.toLocaleString()}`;
+
+            // Update stats card for profit
+            const statsGrid = document.getElementById('statsGrid');
+            if (statsGrid) {
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <h3>Total Stock</h3>
+                        <div class="value">${totalStock}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <div class="value">${totalOrders}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue (Completed)</h3>
+                        <div class="value">Rs. ${totalRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Profit (Completed)</h3>
+                        <div class="value">Rs. ${totalProfit.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+
+            // Top selling
+            const sales = {};
+            orders.filter(o => o.status === 'Completed' || o.status === 'Dispatched').forEach(order => {
+                if (!order.items) return;
+
+                order.items.forEach(item => {
+                    const category = item.category || 'N/A';
+                    const key = `${category}-${item.size}-${item.color}`;
+                    if (!sales[key]) {
+                        sales[key] = { category, size: item.size, color: item.color, quantity: 0, revenue: 0 };
+                    }
+                    sales[key].quantity += (item.quantity || 0);
+                    sales[key].revenue += (item.sellPrice || item.price || 0);
+                });
+            });
+
+            const topSellingHTML = Object.values(sales)
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 10)
+                .map(data => `
+                    <tr>
+                        <td>${data.size}</td>
+                        <td>${data.color}</td>
+                        <td>${data.quantity}</td>
+                        <td>Rs. ${data.revenue.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+
+            const topSellingElement = document.getElementById('topSellingTable');
+            if (topSellingElement) {
+                topSellingElement.innerHTML = topSellingHTML || '<tr><td colspan="4" style="text-align:center">No sales data</td></tr>';
+            }
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            let csv = 'Order ID,Customer,Phone,Address,Date,Category,Size,Color,Quantity,Unit Cost,Unit Sell,Item Cost,Item Sell,Actual Cost,Sell Price,COD Tax,Delivery,Total,Profit,Payment Method,Status\n';
+            orders.forEach(order => {
+                if (!order.items || order.items.length === 0) return;
+                
+                order.items.forEach((item, index) => {
+                    const category = item.category || 'N/A';
+                    const unitCost = item.unitCost || 0;
+                    const unitSell = item.unitSell || 0;
+                    const itemCost = item.costPrice || 0;
+                    const itemSell = item.sellPrice || item.price || 0;
+                    
+                    if (index === 0) {
+                        const actualCost = order.actualCost || 0;
+                        const sellPrice = order.sellPrice || order.total || 0;
+                        const codTax = order.codTax || 0;
+                        const deliveryCharges = order.deliveryCharges || 0;
+                        const total = order.total || 0;
+                        const profit = order.profit || 0;
+                        const paymentMethod = order.paymentMethod || 'N/A';
+                        
+                        csv += `${order.id},${order.customerName},${order.customerPhone || 'N/A'},${order.customerAddress || 'N/A'},${order.date},${category},${item.size},${item.color},${item.quantity},${unitCost},${unitSell},${itemCost},${itemSell},${actualCost},${sellPrice},${codTax},${deliveryCharges},${total},${profit.toFixed(2)},${paymentMethod},${order.status}\n`;
+                    } else {
+                        csv += `,,,,,,${category},${item.size},${item.color},${item.quantity},${unitCost},${unitSell},${itemCost},${itemSell},,,,,,,,\n`;
+                    }
+                });
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            alert('✅ Orders exported successfully!');
+        }
+
+        // Export Inventory
+        function exportInventory() {
+            let csv = 'Category,Size,Color,Stock,Cost Price,Selling Price,Total Value\n';
+            Object.entries(inventory).forEach(([key, data]) => {
+                const parts = key.split('-');
+                if (parts.length < 3) return; // Skip invalid keys
+                
+                const category = parts[0];
+                const size = parts[1];
+                const color = parts[2];
+                const stock = data.stock || 0;
+                const costPrice = data.costPrice || 0;
+                const sellingPrice = data.sellingPrice || 0;
+                const totalValue = stock * sellingPrice;
+                csv += `${category},${size},${color},${stock},${costPrice},${sellingPrice},${totalValue}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `inventory_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            alert('✅ Inventory exported successfully!');
+        }
+
+        // Edit Order
+        function editOrder(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) return;
+
+            editingOrderId = orderId;
+
+            // Fill customer details
+            document.getElementById('editOrderId').textContent = order.id;
+            document.getElementById('editOrderCustomerName').value = order.customerName;
+            document.getElementById('editOrderPhone').value = order.customerPhone || '';
+            document.getElementById('editOrderAddress').value = order.customerAddress || '';
+            document.getElementById('editOrderDate').value = order.date;
+            document.getElementById('editOrderDelivery').value = order.deliveryCharges || 250;
+            document.getElementById('editOrderPayment').value = order.paymentMethod || 'COD';
+
+            // Display items
+            const itemsHTML = order.items.map((item, index) => {
+                const category = item.category || 'N/A';
+                const unitSell = item.unitSell || 0;
+                return `
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${category} - Size ${item.size} - ${item.color}</strong><br>
+                                <span>Quantity: ${item.quantity} × Rs. ${unitSell} = Rs. ${(item.sellPrice || 0).toLocaleString()}</span>
+                            </div>
+                            <button class="btn btn-danger btn-small" onclick="removeEditOrderItem(${index})">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('editOrderItemsList').innerHTML = itemsHTML;
+            
+            // Calculate totals
+            updateEditOrderSummary();
+
+            // Show modal
+            document.getElementById('editOrderModal').classList.add('active');
+        }
+
+        // Remove item from edit order
+        function removeEditOrderItem(itemIndex) {
+            const order = orders.find(o => o._id === editingOrderId);
+            if (!order) return;
+
+            if (order.items.length === 1) {
+                alert('Cannot remove last item! Delete the order instead.');
+                return;
+            }
+
+            if (confirm('Remove this item from order?')) {
+                // Restore stock
+                const item = order.items[itemIndex];
+                const key = `${item.category}-${item.size}-${item.color}`;
+                if (inventory[key]) {
+                    inventory[key].stock += item.quantity;
+                }
+
+                // Remove item
+                order.items.splice(itemIndex, 1);
+                
+                // Refresh display
+                editOrder(editingOrderId);
+            }
+        }
+
+        // Update order summary in edit modal
+        function updateEditOrderSummary() {
+            const order = orders.find(o => o._id === editingOrderId);
+            if (!order) return;
+
+            const deliveryCharges = parseFloat(document.getElementById('editOrderDelivery').value) || 0;
+            const paymentMethod = document.getElementById('editOrderPayment').value;
+
+            const sellPrice = order.items.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
+            const codTax = paymentMethod === 'COD' ? (sellPrice * 0.04) : 0;
+            const total = sellPrice + codTax + deliveryCharges;
+
+            document.getElementById('editOrderSellPrice').textContent = sellPrice.toLocaleString();
+            document.getElementById('editOrderCodTax').textContent = codTax.toFixed(2);
+            document.getElementById('editOrderDeliveryDisplay').textContent = deliveryCharges.toLocaleString();
+            document.getElementById('editOrderTotal').textContent = total.toLocaleString();
+        }
+
+        // Save order edits
+        function saveOrderEdit() {
+            const order = orders.find(o => o._id === editingOrderId);
+            if (!order) return;
+
+            // Update customer details
+            order.customerName = document.getElementById('editOrderCustomerName').value;
+            order.customerPhone = document.getElementById('editOrderPhone').value;
+            order.customerAddress = document.getElementById('editOrderAddress').value;
+            order.date = document.getElementById('editOrderDate').value;
+            order.deliveryCharges = parseFloat(document.getElementById('editOrderDelivery').value) || 0;
+            order.paymentMethod = document.getElementById('editOrderPayment').value;
+
+            // Recalculate financials
+            order.sellPrice = order.items.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
+            order.actualCost = order.items.reduce((sum, item) => sum + (item.costPrice || 0), 0);
+            order.codTax = order.paymentMethod === 'COD' ? (order.sellPrice * 0.04) : 0;
+            order.total = order.sellPrice + order.codTax + order.deliveryCharges;
+            order.profit = order.sellPrice - order.actualCost - order.deliveryCharges - order.codTax;
+
+            saveData();
+            closeEditOrderModal();
+            updateOrdersTable();
+            alert('✅ Order updated successfully!');
+        }
+
+        // Close edit order modal
+        function closeEditOrderModal() {
+            document.getElementById('editOrderModal').classList.remove('active');
+            editingOrderId = null;
+        }
+
+        // Delete Order
+        function deleteOrder(orderId) {
+            const order = orders.find(o => o._id === orderId);
+
+            if (!order) {
+                alert('Order not found!');
+                return;
+            }
+
+            if (!confirm(`Order #${order.orderId || orderId} delete karna chahte ho?\n\nCustomer: ${order.customerName}\nTotal: Rs. ${(order.total || 0).toLocaleString()}\n\nYeh action undo nahi ho sakta.`)) {
+                return;
+            }
+
+            (async () => {
+                try {
+                    await API.deleteOrder(orderId);
+
+                    // Restore stock for all items
+                    if (order.items && order.items.length > 0) {
+                        for (const item of order.items) {
+                            const key = `${item.category || ''}-${item.size}-${item.color}`;
+                            if (inventory[key] && inventory[key]._id) {
+                                const updated = { ...inventory[key], stock: inventory[key].stock + item.quantity };
+                                await API.updateInventory(inventory[key]._id, updated);
+                                inventory[key].stock = updated.stock;
+                            }
+                        }
+                    }
+
+                    orders = orders.filter(o => o._id !== orderId);
+                    updateOrdersTable();
+                    updateDashboard();
+                    updateInventoryDisplay();
+                    alert('✅ Order delete ho gaya!');
+                } catch (error) {
+                    alert(`❌ Error: ${error.message}`);
+                }
+            })();
+        }
+        
+        // Force Delete Order (No confirmation)
+        function forceDeleteOrder(orderId) {
+            console.log('FORCE Delete Order called for ID:', orderId);
+            
+            const order = orders.find(o => o._id === orderId);
+            
+            if (!order) {
+                alert('Order not found!');
+                return;
+            }
+
+            // Restore stock
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(item => {
+                    const category = item.category || '';
+                    const key = `${category}-${item.size}-${item.color}`;
+                    
+                    if (inventory[key]) {
+                        inventory[key].stock += item.quantity;
+                    } else {
+                        const cat = categories.find(c => c.name === category);
+                        if (cat) {
+                            inventory[key] = {
+                                stock: item.quantity,
+                                costPrice: cat.defaultCost,
+                                sellingPrice: cat.defaultSell
+                            };
+                        }
+                    }
+                });
+            }
+
+            // Remove order
+            orders = orders.filter(o => o.id !== orderId);
+            
+            // Save and update
+            saveData();
+            updateOrdersTable();
+            updateDashboard();
+            
+            alert(`✅ Order #${orderId} FORCE DELETED!\n\nStock restored.`);
+            console.log('Force deletion complete');
+        }
+
+        // Backup Data
+        function backupData() {
+            const backup = {
+                categories,
+                colors,
+                inventory,
+                orders,
+                backupDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+
+            alert('✅ Backup created successfully!');
+        }
+
+        // Restore Data
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (confirm('⚠️ This will replace all current data. Continue?')) {
+                        categories = backup.categories;
+                        colors = backup.colors;
+                        inventory = backup.inventory;
+                        orders = backup.orders;
+                        saveData();
+                        
+                        alert('✅ Data restored successfully!');
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert('❌ Invalid backup file!');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Show Alert
+        function showAlert(elementId, message, type) {
+            const alertHTML = `<div class="alert alert-${type}">${message}</div>`;
+            document.getElementById(elementId).innerHTML = alertHTML;
+            setTimeout(() => {
+                document.getElementById(elementId).innerHTML = '';
+            }, 3000);
+        }
+
+
+        // ==================== AUTHENTICATION ====================
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                showAuthMessage('Please enter email and password', 'danger');
+                return;
+            }
+
+            try {
+                const response = await API.login({ email, password });
+                API.setToken(response.token);
+                localStorage.setItem('user', JSON.stringify(response));
+                showAuth(false);
+                document.getElementById('userDisplayName').textContent = `Welcome, ${response.name}!`;
+                await loadData();
+                updateCategoriesDisplay();
+                updateColorsDisplay();
+                updateDashboard();
+                updateInventoryDisplay();
+            } catch (error) {
+                showAuthMessage(`Login failed: ${error.message}`, 'danger');
+            }
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+
+            if (!name || !email || !password) {
+                showAuthMessage('Please fill all required fields', 'danger');
+                return;
+            }
+
+            try {
+                const response = await API.register({ name, email, password });
+                showAuthMessage('✅ Check your email for verification code', 'success');
+                toggleAuthForm('verification');
+                document.getElementById('verifyEmail').value = email;
+            } catch (error) {
+                showAuthMessage(`Registration failed: ${error.message}`, 'danger');
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                API.removeToken();
+                localStorage.removeItem('user');
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('registerName').value = '';
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+                document.getElementById('authMessage').innerHTML = '';
+                toggleAuthForm('login');
+                showAuth(true);
+            }
+        }
+
+        function toggleAuthForm(formName) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('verificationForm').style.display = 'none';
+            document.getElementById('forgotPasswordForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+
+            if (formName === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+            } else if (formName === 'register') {
+                document.getElementById('registerForm').style.display = 'block';
+            } else if (formName === 'verification') {
+                document.getElementById('verificationForm').style.display = 'block';
+            } else if (formName === 'forgotPassword') {
+                document.getElementById('forgotPasswordForm').style.display = 'block';
+            } else if (formName === 'resetPassword') {
+                document.getElementById('resetPasswordForm').style.display = 'block';
+            }
+            document.getElementById('authMessage').innerHTML = '';
+        }
+
+        async function handleVerifyEmail() {
+            const email = document.getElementById('verifyEmail').value.trim();
+            const code = document.getElementById('verifyCode').value.trim();
+
+            if (!email || !code) {
+                showAuthMessage('Please enter email and verification code', 'danger');
+                return;
+            }
+
+            try {
+                const response = await API.verifyEmail({ email, code });
+                API.setToken(response.token);
+                localStorage.setItem('user', JSON.stringify(response));
+                showAuth(false);
+                document.getElementById('userDisplayName').textContent = `Welcome, ${response.name}!`;
+                showAuthMessage('✅ Email verified! Logged in.', 'success');
+                loadData();
+            } catch (error) {
+                showAuthMessage(`Verification failed: ${error.message}`, 'danger');
+            }
+        }
+
+        async function handleForgotPassword() {
+            const email = document.getElementById('forgotEmail').value.trim();
+
+            if (!email) {
+                showAuthMessage('Please enter your email', 'danger');
+                return;
+            }
+
+            try {
+                await API.forgotPassword({ email });
+                showAuthMessage('✅ Reset code sent to your email', 'success');
+                toggleAuthForm('resetPassword');
+                document.getElementById('resetEmail').value = email;
+            } catch (error) {
+                showAuthMessage(`Failed: ${error.message}`, 'danger');
+            }
+        }
+
+        async function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const code = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('resetNewPassword').value.trim();
+
+            if (!email || !code || !newPassword) {
+                showAuthMessage('Please fill all fields', 'danger');
+                return;
+            }
+
+            try {
+                await API.resetPassword({ email, code, newPassword });
+                showAuthMessage('✅ Password reset successfully!', 'success');
+                toggleAuthForm('login');
+                document.getElementById('resetEmail').value = '';
+                document.getElementById('resetCode').value = '';
+                document.getElementById('resetNewPassword').value = '';
+            } catch (error) {
+                showAuthMessage(`Reset failed: ${error.message}`, 'danger');
+            }
+        }
+
+        function showAuthMessage(message, type) {
+            const msgEl = document.getElementById('authMessage');
+            msgEl.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        function showAuth(show) {
+            document.getElementById('authContainer').style.display = show ? 'block' : 'none';
+            document.getElementById('mainContainer').style.display = show ? 'none' : 'block';
+        }
+
+        function checkAuth() {
+            const token = API.getToken();
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                document.getElementById('userDisplayName').textContent = `Welcome, ${user.name}!`;
+                showAuth(false);
+            } else {
+                showAuth(true);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            checkAuth();
+            const token = API.getToken();
+            if (token) {
+                try {
+                    console.log('Loading data...');
+                    await loadData();
+                    console.log('Data loaded successfully');
+
+                    console.log('Updating categories display...');
+                    updateCategoriesDisplay();
+                    console.log('Categories display updated');
+
+                    console.log('Updating colors display...');
+                    updateColorsDisplay();
+                    console.log('Colors display updated');
+
+                    console.log('Updating dashboard...');
+                    updateDashboard();
+                    console.log('Dashboard updated');
+
+                    console.log('Updating inventory display...');
+                    updateInventoryDisplay();
+                    console.log('Inventory display updated');
+
+                    document.getElementById('orderDate').valueAsDate = new Date();
+
+                    // Add event listeners for edit order modal
+                    const editOrderDelivery = document.getElementById('editOrderDelivery');
+                    const editOrderPayment = document.getElementById('editOrderPayment');
+
+                    if (editOrderDelivery) {
+                        editOrderDelivery.addEventListener('input', updateEditOrderSummary);
+                    }
+                    if (editOrderPayment) {
+                        editOrderPayment.addEventListener('change', updateEditOrderSummary);
+                    }
+                    console.log('Initialization complete');
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
