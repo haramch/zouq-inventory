@@ -355,21 +355,13 @@
             }
         }
 
-        /* Orders Two-Panel Layout */
-        .orders-layout {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 25px;
-            align-items: start;
-        }
-
+        /* Orders Stacked Layout */
         .order-form-panel {
             background: #f8f9fa;
             border-radius: 12px;
             padding: 20px;
             border: 1px solid #e0e0e0;
-            position: sticky;
-            top: 20px;
+            margin-bottom: 25px;
         }
 
         .order-form-panel h2 {
@@ -380,47 +372,11 @@
             border-bottom: 2px solid #e0e0e0;
         }
 
-        .order-form-panel .form-group {
-            margin-bottom: 10px;
-        }
-
-        .order-form-panel .form-group label {
-            font-size: 13px;
-        }
-
-        .order-form-panel .form-group input,
-        .order-form-panel .form-group select {
-            padding: 9px;
-            font-size: 13px;
-        }
-
-        .orders-list-panel {
-            min-width: 0;
-        }
-
-        .orders-list-panel h2 {
-            color: #667eea;
-            font-size: 1.2em;
-            margin: 0;
-        }
-
-        .orders-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-top: 0;
-        }
-
-        .orders-table {
-            min-width: unset !important;
-            width: 100%;
-        }
-
-        .orders-table th,
-        .orders-table td {
-            padding: 9px 11px;
-            font-size: 13px;
-            white-space: nowrap;
+        .order-customer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .order-actions-row {
@@ -440,11 +396,10 @@
             border-radius: 8px;
             padding: 10px;
             margin-bottom: 8px;
-        }
-
-        .order-item-row .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr 70px 36px;
             gap: 8px;
-            margin-bottom: 6px;
+            align-items: end;
         }
 
         .order-item-row .form-group input,
@@ -457,15 +412,12 @@
             font-size: 11px;
         }
 
-        @media (max-width: 1024px) {
-            .orders-layout {
+        @media (max-width: 900px) {
+            .order-item-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .order-customer-grid {
                 grid-template-columns: 1fr;
-            }
-            .order-form-panel {
-                position: static;
-            }
-            .orders-table {
-                min-width: 700px !important;
             }
         }
     </style>
@@ -820,12 +772,12 @@
 
         <!-- Orders -->
         <div id="orders" class="content">
-            <div class="orders-layout">
 
-                <!-- Left: New Order Form -->
-                <div class="order-form-panel">
-                    <h2>🛒 New Order</h2>
+            <!-- Top: New Order Form (full width) -->
+            <div class="order-form-panel">
+                <h2>🛒 New Order</h2>
 
+                <div class="order-customer-grid">
                     <div class="form-group">
                         <label>Customer Name</label>
                         <input type="text" id="customerName" placeholder="Customer ka naam">
@@ -835,65 +787,129 @@
                         <input type="text" id="customerPhone" placeholder="Phone number">
                     </div>
                     <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" id="customerAddress" placeholder="Delivery address">
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <div class="form-group">
-                            <label>Date</label>
-                            <input type="date" id="orderDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Delivery (Rs.)</label>
-                            <input type="number" id="deliveryCharges" value="250" min="0">
-                        </div>
+                        <label>Province</label>
+                        <select id="customerProvince" onchange="updateCitiesDropdown()">
+                            <option value="">Select Province</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Sindh">Sindh</option>
+                            <option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa</option>
+                            <option value="Balochistan">Balochistan</option>
+                            <option value="Gilgit-Baltistan">Gilgit-Baltistan</option>
+                            <option value="Azad Kashmir">Azad Kashmir</option>
+                            <option value="Islamabad Capital Territory">Islamabad Capital Territory</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>Payment</label>
+                        <label>City (select ya khud likhein)</label>
+                        <input type="text" id="customerCity" list="cityOptions" placeholder="City select ya type karein" autocomplete="off">
+                        <datalist id="cityOptions"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Tehsil</label>
+                        <input type="text" id="customerTehsil" placeholder="Tehsil ka naam likhein">
+                    </div>
+                    <div class="form-group">
+                        <label>Home Address</label>
+                        <input type="text" id="customerAddress" placeholder="Ghar ka pata">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="orderDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery (Rs.)</label>
+                        <input type="number" id="deliveryCharges" value="250" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
                         <select id="paymentMethod">
                             <option value="COD">Cash on Delivery (COD)</option>
                             <option value="Prepaid">Prepaid</option>
                         </select>
                     </div>
-
-                    <div class="order-items-section">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <h3 style="margin:0; font-size:0.95em; color:#333;">Order Items</h3>
-                            <button class="btn btn-success btn-small" onclick="addOrderItem()">+ Add Item</button>
-                        </div>
-                        <div id="orderItems"></div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="createOrder()" style="width:100%; padding:13px; margin-top:4px;">Create Order</button>
-                    <div id="orderAlert" style="margin-top:10px;"></div>
                 </div>
 
-                <!-- Right: All Orders -->
-                <div class="orders-list-panel">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-                        <h2>📋 All Orders</h2>
-                        <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="filterOrders()" style="padding:9px 13px; border:2px solid #e0e0e0; border-radius:8px; font-size:13px; width:220px;">
+                <!-- Deal + Amount Section -->
+                <div style="background:#fff3cd; border:2px solid #ffc107; border-radius:10px; padding:14px 18px; margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:15px; align-items:end;">
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-weight:700; color:#856404;">Deal Select Karein</label>
+                        <select id="orderDeal" style="padding:10px; border:2px solid #ffc107; border-radius:8px; font-size:14px; width:100%; background:white; font-weight:600;">
+                            <option value="Deal One">Deal One</option>
+                            <option value="Deal Two">Deal Two</option>
+                            <option value="Deal Three">Deal Three</option>
+                        </select>
                     </div>
-                    <div class="orders-table-container">
-                        <table class="orders-table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Customer</th>
-                                    <th>Items</th>
-                                    <th>Total</th>
-                                    <th>Profit</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ordersTable"></tbody>
-                        </table>
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-weight:700; color:#856404;">Total Amount (Rs.)</label>
+                        <input type="number" id="orderAmount" min="0" placeholder="Amount likhein" style="padding:10px; border:2px solid #ffc107; border-radius:8px; font-size:14px; width:100%; font-weight:600;">
                     </div>
                 </div>
 
+                <!-- Parcel Type Section (Invoice par show hoga) -->
+                <div style="background:#eaf4fb; border:2px solid #3498db; border-radius:10px; padding:14px 18px; margin-bottom:10px;">
+                    <label style="font-weight:700; color:#1a5276; display:block; margin-bottom:10px; font-size:13px;">Parcel Type — Invoice par show hoga</label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <label id="pt-none" onclick="selectParcelType('')" style="display:flex; align-items:center; gap:6px; cursor:pointer; padding:9px 18px; border:2px solid #3498db; border-radius:8px; background:#3498db; color:white; font-weight:700; font-size:14px; user-select:none;">
+                            None
+                        </label>
+                        <label id="pt-allow" onclick="selectParcelType('Allow to Open')" style="display:flex; align-items:center; gap:6px; cursor:pointer; padding:9px 18px; border:2px solid #3498db; border-radius:8px; background:white; color:#1a5276; font-weight:700; font-size:14px; user-select:none;">
+                            Allow to Open
+                        </label>
+                        <label id="pt-retail" onclick="selectParcelType('COD Retail')" style="display:flex; align-items:center; gap:6px; cursor:pointer; padding:9px 18px; border:2px solid #3498db; border-radius:8px; background:white; color:#1a5276; font-weight:700; font-size:14px; user-select:none;">
+                            COD Retail
+                        </label>
+                    </div>
+                    <input type="hidden" id="parcelType" value="">
+                </div>
+
+                <div class="order-items-section">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="margin:0; font-size:0.95em; color:#333;">Order Items</h3>
+                        <button class="btn btn-success btn-small" onclick="addOrderItem()">+ Add Item</button>
+                    </div>
+                    <!-- Header row for items -->
+                    <div style="display:grid; grid-template-columns:2fr 1fr 2fr 70px 36px; gap:8px; padding:0 10px; margin-bottom:4px;">
+                        <span style="font-size:11px; font-weight:600; color:#666;">Category</span>
+                        <span style="font-size:11px; font-weight:600; color:#666;">Size</span>
+                        <span style="font-size:11px; font-weight:600; color:#666;">Color</span>
+                        <span style="font-size:11px; font-weight:600; color:#666;">Qty</span>
+                        <span></span>
+                    </div>
+                    <div id="orderItems"></div>
+                </div>
+
+                <button class="btn btn-primary" onclick="createOrder()" style="width:100%; padding:13px; margin-top:10px;">Create Order</button>
+                <div id="orderAlert" style="margin-top:10px;"></div>
             </div>
+
+            <!-- Bottom: All Orders -->
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                    <h2 style="color:#667eea; margin:0;">📋 All Orders</h2>
+                    <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="filterOrders()" style="padding:9px 13px; border:2px solid #e0e0e0; border-radius:8px; font-size:13px; width:220px;">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Sell Price</th>
+                                <th>Tax (4%)</th>
+                                <th>Delivery</th>
+                                <th>Total</th>
+                                <th>Profit</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
         </div>
 
@@ -1005,7 +1021,7 @@
                 </div>
                 <div class="form-group">
                     <label>Address</label>
-                    <input type="text" id="editOrderAddress">
+                    <textarea id="editOrderAddress" style="padding:8px; border:1px solid #ddd; border-radius:5px; font-size:14px; min-height:60px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Date</label>
@@ -1113,8 +1129,127 @@
         let inventory = {};
         let orders = [];
         let orderItemCount = 0;
+
+        // Pakistan Provinces and Cities Data (Tehsil manual type karo)
+        const pakistanLocations = {
+            'Punjab': [
+                'Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot',
+                'Bahawalpur', 'Sargodha', 'Jhang', 'Sheikhupura', 'Rahim Yar Khan',
+                'Dera Ghazi Khan', 'Gujrat', 'Sahiwal', 'Wah Cantonment', 'Okara',
+                'Kasur', 'Chiniot', 'Khanewal', 'Pakpattan', 'Lodhran', 'Muzaffargarh',
+                'Mandi Bahauddin', 'Jhelum', 'Bahawalnagar', 'Attock', 'Chakwal',
+                'Hafizabad', 'Toba Tek Singh', 'Narowal', 'Nankana Sahib', 'Khushab',
+                'Mianwali', 'Bhakkar', 'Layyah', 'Vehari', 'Rajanpur', 'Khairpur Tamewali',
+                'Ahmadpur East', 'Liaquatpur', 'Kot Addu', 'Kamalia', 'Jaranwala',
+                'Sambrial', 'Daska', 'Wazirabad', 'Taxila', 'Murree', 'Gujar Khan',
+                'Pattoki', 'Chunian', 'Phool Nagar', 'Renala Khurd', 'Depalpur',
+                'Arifwala', 'Burewala', 'Mailsi', 'Hasilpur', 'Yazman', 'Uch Sharif',
+                'Ahmadpur Sharqia', 'Haroonabad', 'Fort Abbas', 'Chishtian', 'Minchinabad',
+                'Sadiqabad', 'Khanpur', 'Liaqatpur', 'Rojhan', 'Kot Chutta',
+                'Taunsa', 'Vehowa', 'Alipur', 'Jatoi', 'Kabirwala', 'Mian Channu',
+                'Shorkot', 'Chiniot', 'Lalian', 'Bhawana', 'Sargodha City',
+                'Bhalwal', 'Sillanwali', 'Sahiwal (Sargodha)', 'Kot Momin', 'Shahpur',
+                'Joharabad', 'Nurpur', 'Piplan', 'Kundian', 'Isakhel', 'Kalur Kot',
+                'Mankera', 'Darya Khan', 'Dullewala', 'Kalurkot', 'Chaubara',
+                'Chak Jhumra', 'Sammundri', 'Tandlianwala', 'Gojra', 'Rabwah',
+                'Pindi Bhattian', 'Shakargarh', 'Zafarwal', 'Wazirabad', 'Pasrur',
+                'Gujrat City', 'Kharian', 'Lalamusa', 'Sarai Alamgir', 'Dinga',
+                'Phalia', 'Malikwal', 'Kot Daska', 'Muridke', 'Chungi Amar Sadhu'
+            ],
+            'Sindh': [
+                'Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpur Khas',
+                'Jacobabad', 'Shikarpur', 'Khairpur', 'Sanghar', 'Umerkot', 'Badin',
+                'Thatta', 'Dadu', 'Tando Adam', 'Tando Allahyar', 'Ghotki',
+                'Kashmore', 'Kandhkot', 'Qambar', 'Shahdadkot', 'Mehar', 'Johi',
+                'Sehwan', 'Moro', 'Sakrand', 'Tando Muhammad Khan', 'Matli',
+                'Mirpur Bathoro', 'Gharo', 'Kotri', 'Jamshoro', 'Sann',
+                'Daharki', 'Ubauro', 'Pano Aqil', 'Rohri', 'Saleh Pat',
+                'Ranipur', 'Gambat', 'Kingri', 'Naudero', 'Garhi Khairo',
+                'Thul', 'Kandiaro', 'Radhan', 'Nasirabad', 'Ratodero',
+                'Dokri', 'Warah', 'Bubak', 'Kot Ghulam Muhammad',
+                'Tando Jam', 'Hala', 'Saeedabad', 'Mian Jo Goth',
+                'Mirpur Sakro', 'Gharo', 'Keti Bandar', 'Jati'
+            ],
+            'Khyber Pakhtunkhwa': [
+                'Peshawar', 'Mardan', 'Mingora', 'Abbottabad', 'Kohat', 'Dera Ismail Khan',
+                'Mansehra', 'Swabi', 'Nowshera', 'Haripur', 'Charsadda', 'Bannu',
+                'Karak', 'Hangu', 'Battagram', 'Buner', 'Dir', 'Lower Dir', 'Upper Dir',
+                'Chitral', 'Tank', 'Lakki Marwat', 'Torghar', 'Kohistan',
+                'Shangla', 'Malakand', 'Mohmand', 'Khyber', 'Kurram',
+                'North Waziristan', 'South Waziristan', 'Orakzai',
+                'Havelian', 'Ghazi', 'Tarbela', 'Attock (KPK border)',
+                'Risalpur', 'Pabbi', 'Takht Bhai', 'Rustam', 'Katlang',
+                'Chakdara', 'Timergara', 'Drosh', 'Mastuj', 'Booni',
+                'Balakot', 'Shinkiari', 'Darband', 'Oghi', 'Pakhal',
+                'Bannu City', 'Domel', 'Miran Shah', 'Wana', 'Parachinar',
+                'Sadda', 'Tall', 'Darra Adam Khel', 'Jamrud', 'Landi Kotal'
+            ],
+            'Balochistan': [
+                'Quetta', 'Turbat', 'Khuzdar', 'Hub', 'Chaman', 'Zhob',
+                'Loralai', 'Sibi', 'Gwadar', 'Kalat', 'Mastung', 'Panjgur',
+                'Kharan', 'Dalbandin', 'Nushki', 'Pishin', 'Qila Saifullah',
+                'Qila Abdullah', 'Dera Bugti', 'Sui', 'Usta Muhammad',
+                'Jhal Magsi', 'Gandawa', 'Sohbatpur', 'Bolan', 'Mach',
+                'Harnai', 'Ziarat', 'Muslim Bagh', 'Qila Abdullah',
+                'Chaghi', 'Taftan', 'Washuk', 'Awaran', 'Kech',
+                'Lasbela', 'Uthal', 'Bela', 'Khuzdar City', 'Wadh',
+                'Kharan City', 'Nokundi', 'Pasni', 'Ormara', 'Jiwani'
+            ],
+            'Gilgit-Baltistan': [
+                'Gilgit', 'Skardu', 'Hunza', 'Ghanche', 'Chilas', 'Astore',
+                'Shigar', 'Ghizer', 'Nagar', 'Diamer', 'Khaplu', 'Ganche',
+                'Roundu', 'Kharmang', 'Dasu', 'Tangir', 'Darel',
+                'Gupis', 'Yasin', 'Ishkoman', 'Karimabad', 'Aliabad',
+                'Gahkuch', 'Phander', 'Shandur', 'Nomal', 'Jutial'
+            ],
+            'Azad Kashmir': [
+                'Muzaffarabad', 'Mirpur', 'Rawalakot', 'Kotli', 'Bagh',
+                'Haveli', 'Sudhnoti', 'Neelum', 'Hattian Bala', 'Pallandri',
+                'Hajira', 'Abbaspur', 'Bhimber', 'Dadyal', 'Sehnsa',
+                'Nakyal', 'Samahni', 'Barnala', 'Nikial', 'Trarkhal',
+                'Sharda', 'Kel', 'Athmuqam'
+            ],
+            'Islamabad Capital Territory': [
+                'Islamabad'
+            ]
+        };
         let editingItem = null;
         let editingOrderId = null;
+
+        // Parcel Type selection
+        function selectParcelType(val) {
+            document.getElementById('parcelType').value = val;
+            const btns = { '': 'pt-none', 'Allow to Open': 'pt-allow', 'COD Retail': 'pt-retail' };
+            Object.entries(btns).forEach(([v, id]) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (v === val) {
+                    el.style.background = '#3498db';
+                    el.style.color = 'white';
+                } else {
+                    el.style.background = 'white';
+                    el.style.color = '#1a5276';
+                }
+            });
+        }
+
+        // Update Cities datalist based on selected Province
+        function updateCitiesDropdown() {
+            const province = document.getElementById('customerProvince').value;
+            const datalist = document.getElementById('cityOptions');
+            document.getElementById('customerCity').value = '';
+            document.getElementById('customerTehsil').value = '';
+            datalist.innerHTML = '';
+            if (province && pakistanLocations[province]) {
+                pakistanLocations[province].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    datalist.appendChild(option);
+                });
+            }
+        }
+
+        function updateTehsilsDropdown() {}
 
         // Load data from APIs
         async function loadData() {
@@ -1133,8 +1268,10 @@
                     return [];
                 });
 
-                // Don't load orders on initial load to avoid errors
-                const ordersRes = [];
+                const ordersRes = await API.getOrders().catch(e => {
+                    console.warn('Orders error:', e);
+                    return [];
+                });
 
                 categories = Array.isArray(categoriesRes) ? categoriesRes : [];
                 colors = Array.isArray(colorsRes) ? colorsRes : [];
@@ -1183,7 +1320,12 @@
             else if (tabName === 'categories') updateCategoriesDisplay();
             else if (tabName === 'colors') updateColorsDisplay();
             else if (tabName === 'inventory') updateInventoryDisplay();
-            else if (tabName === 'orders') updateOrdersTable();
+            else if (tabName === 'orders') {
+                API.getOrders().then(res => {
+                    orders = Array.isArray(res) ? res : [];
+                    updateOrdersTable();
+                }).catch(() => updateOrdersTable());
+            }
             else if (tabName === 'reports') {
                 // Load orders for reports
                 API.getOrders().then(res => {
@@ -1827,29 +1969,25 @@
 
             const itemHTML = `
                 <div class="order-item-row" id="orderItem${orderItemCount}">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:6px;">
-                        <div class="form-group">
-                            <label>Category</label>
-                            <select id="itemCategory${orderItemCount}" onchange="updateOrderItemSizes(${orderItemCount})">${categoryOptions}</select>
-                        </div>
-                        <div class="form-group">
-                            <label>Size</label>
-                            <select id="itemSize${orderItemCount}">
-                                <option value="">Select</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <select id="itemCategory${orderItemCount}" onchange="updateOrderItemSizes(${orderItemCount})" style="padding:7px; font-size:12px; border:1px solid #ddd; border-radius:6px; width:100%;">
+                            ${categoryOptions}
+                        </select>
                     </div>
-                    <div style="display:grid; grid-template-columns:1fr 80px auto; gap:8px; align-items:end;">
-                        <div class="form-group">
-                            <label>Color</label>
-                            <select id="itemColor${orderItemCount}">${colorOptions}</select>
-                        </div>
-                        <div class="form-group">
-                            <label>Qty</label>
-                            <input type="number" id="itemQty${orderItemCount}" min="1" value="1">
-                        </div>
-                        <button class="btn btn-danger btn-small" onclick="removeOrderItem(${orderItemCount})" style="margin-bottom:0;">✕</button>
+                    <div class="form-group">
+                        <select id="itemSize${orderItemCount}" style="padding:7px; font-size:12px; border:1px solid #ddd; border-radius:6px; width:100%;">
+                            <option value="">Size</option>
+                        </select>
                     </div>
+                    <div class="form-group">
+                        <select id="itemColor${orderItemCount}" style="padding:7px; font-size:12px; border:1px solid #ddd; border-radius:6px; width:100%;">
+                            ${colorOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="itemQty${orderItemCount}" min="1" value="1" style="padding:7px; font-size:12px; border:1px solid #ddd; border-radius:6px; width:100%;">
+                    </div>
+                    <button class="btn btn-danger btn-small" onclick="removeOrderItem(${orderItemCount})" style="padding:7px 10px;">✕</button>
                 </div>
             `;
             document.getElementById('orderItems').insertAdjacentHTML('beforeend', itemHTML);
@@ -1882,7 +2020,10 @@
         function createOrder() {
             const customerName = document.getElementById('customerName').value;
             const customerPhone = document.getElementById('customerPhone').value;
-            const customerAddress = document.getElementById('customerAddress').value;
+            const province = document.getElementById('customerProvince').value;
+            const city = document.getElementById('customerCity').value;
+            const tehsil = document.getElementById('customerTehsil').value;
+            const homeAddress = document.getElementById('customerAddress').value;
             const orderDate = document.getElementById('orderDate').value || new Date().toISOString().split('T')[0];
             const deliveryCharges = parseFloat(document.getElementById('deliveryCharges').value) || 0;
             const paymentMethod = document.getElementById('paymentMethod').value;
@@ -1892,8 +2033,24 @@
                 return;
             }
 
+            // Combine address details
+            const customerAddress = [homeAddress, tehsil, city, province].filter(x => x).join(', ');
+            if (!customerAddress) {
+                showAlert('orderAlert', 'Please fill in complete address details', 'danger');
+                return;
+            }
+
+            // Deal + Amount + Parcel Type upar se lo
+            const orderDeal = document.getElementById('orderDeal').value;
+            const orderAmount = parseFloat(document.getElementById('orderAmount').value) || 0;
+            const parcelType = document.getElementById('parcelType').value;
+
+            if (orderAmount <= 0) {
+                showAlert('orderAlert', 'Amount zaroor likhein!', 'danger');
+                return;
+            }
+
             const items = [];
-            let sellPrice = 0;
             let actualCost = 0;
 
             for (let i = 1; i <= orderItemCount; i++) {
@@ -1906,7 +2063,7 @@
                     const category = categoryEl.value;
                     const size = sizeEl.value;
                     const color = colorEl.value;
-                    const qty = parseInt(qtyEl.value);
+                    const qty = parseInt(qtyEl.value) || 1;
                     const key = `${category}-${size}-${color}`;
 
                     if (!inventory[key] || inventory[key].stock < qty) {
@@ -1914,7 +2071,6 @@
                         return;
                     }
 
-                    const itemSellPrice = inventory[key].sellingPrice * qty;
                     const itemCost = inventory[key].costPrice * qty;
 
                     items.push({
@@ -1922,23 +2078,25 @@
                         size,
                         color,
                         quantity: qty,
-                        sellPrice: itemSellPrice,
+                        deal: orderDeal,
+                        sellPrice: 0,
                         costPrice: itemCost,
                         unitCost: inventory[key].costPrice,
-                        unitSell: inventory[key].sellingPrice
+                        unitSell: 0
                     });
 
-                    sellPrice += itemSellPrice;
                     actualCost += itemCost;
                 }
             }
+
+            const sellPrice = orderAmount;
 
             if (items.length === 0) {
                 showAlert('orderAlert', 'Please add at least one item', 'danger');
                 return;
             }
 
-            // Calculate COD tax (4% on COD orders only)
+            // Calculate COD tax (4% sirf COD pe)
             const codTax = paymentMethod === 'COD' ? (sellPrice * 0.04) : 0;
 
             // Calculate total (sell price + COD tax + delivery)
@@ -1958,6 +2116,7 @@
                 codTax,
                 deliveryCharges,
                 paymentMethod,
+                parcelType,
                 total,
                 profit,
                 status: 'Pending'
@@ -1985,9 +2144,15 @@
 
                     document.getElementById('customerName').value = '';
                     document.getElementById('customerPhone').value = '';
+                    document.getElementById('customerProvince').value = '';
+                    document.getElementById('customerCity').value = '';
+                    document.getElementById('customerTehsil').value = '';
                     document.getElementById('customerAddress').value = '';
                     document.getElementById('deliveryCharges').value = '250';
                     document.getElementById('paymentMethod').value = 'COD';
+                    document.getElementById('orderDeal').value = 'Deal One';
+                    document.getElementById('orderAmount').value = '';
+                    selectParcelType('');
                     document.getElementById('orderItems').innerHTML = '';
                     orderItemCount = 0;
 
@@ -2008,17 +2173,25 @@
                 if (order.status === 'Completed') statusColor = '#28a745';
                 if (order.status === 'Returned') statusColor = '#dc3545';
 
+                const sellPrice = order.sellPrice || 0;
+                const codTax = order.codTax || 0;
+                const delivery = order.deliveryCharges || 0;
                 const total = order.total || 0;
                 const profit = order.profit || 0;
+                const itemSummary = order.items ? order.items.map(it => `${it.category||''} ${it.size} ${it.color} x${it.quantity}`).join('<br>') : '';
 
                 return `
                     <tr>
-                        <td><strong>#${order.orderId || ''}</strong></td>
+                        <td><strong>${order.orderId || ''}</strong></td>
                         <td>
                             <strong>${order.customerName}</strong><br>
-                            <small style="color:#888;">${order.customerPhone || ''}</small>
+                            <small style="color:#888;">${order.customerPhone || ''}</small><br>
+                            <small style="color:#aaa;">${order.customerAddress || ''}</small>
                         </td>
-                        <td style="text-align:center;">${order.items ? order.items.length : 0}</td>
+                        <td style="font-size:12px; color:#555;">${itemSummary}</td>
+                        <td><strong>Rs. ${sellPrice.toLocaleString()}</strong></td>
+                        <td style="color:#e67e22; font-weight:600;">Rs. ${codTax.toFixed(0)}</td>
+                        <td>Rs. ${delivery.toLocaleString()}</td>
                         <td><strong>Rs. ${total.toLocaleString()}</strong></td>
                         <td style="color:${profit >= 0 ? '#28a745' : '#dc3545'}; font-weight:bold;">
                             Rs. ${profit.toFixed(0)}
@@ -2043,7 +2216,7 @@
                     </tr>
                 `;
             }).join('');
-            document.getElementById('ordersTable').innerHTML = tableHTML || '<tr><td colspan="8" style="text-align:center; padding:30px; color:#999;">Koi order nahi hai</td></tr>';
+            document.getElementById('ordersTable').innerHTML = tableHTML || '<tr><td colspan="11" style="text-align:center; padding:30px; color:#999;">Koi order nahi hai</td></tr>';
         }
 
         // Change Order Status
@@ -2379,146 +2552,169 @@ Status: ${order.status}`);
             const order = orders.find(o => o._id === orderId);
             if (!order) return;
 
-            const itemsHTML = order.items.map(item => `
-                <tr>
-                    <td>Size ${item.size} - ${item.color}</td>
-                    <td style="text-align: center;">${item.quantity}</td>
-                    <td style="text-align: right;">Rs. ${item.unitSell}</td>
-                    <td style="text-align: right;">Rs. ${item.sellPrice}</td>
-                </tr>
-            `).join('');
+            // Store info — apna number yahan update karein
+            const STORE_NAME = 'Zouq Wear';
+            const STORE_CITY = 'Faisalabad';
+            const STORE_PHONE = '03249640681';
+
+            const sellPrice = order.sellPrice || 0;
 
             const printWindow = window.open('', '', 'width=800,height=600');
             printWindow.document.write(`
                 <html>
                 <head>
-                    <title>Invoice #${order.id}</title>
+                    <title>Invoice ${order.orderId || ''}</title>
                     <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
+                        body {
+                            font-family: Arial, sans-serif;
                             padding: 30px;
                             max-width: 800px;
                             margin: 0 auto;
+                            color: #222;
                         }
                         .header {
                             text-align: center;
                             border-bottom: 3px solid #667eea;
-                            padding-bottom: 20px;
-                            margin-bottom: 30px;
+                            padding-bottom: 15px;
+                            margin-bottom: 25px;
                         }
-                        h1 { 
-                            color: #667eea; 
-                            margin-bottom: 5px;
-                        }
-                        .invoice-info {
+                        h1 { color: #667eea; margin-bottom: 4px; }
+                        .from-to {
                             display: flex;
                             justify-content: space-between;
-                            margin-bottom: 30px;
+                            margin-bottom: 25px;
+                            gap: 20px;
                         }
-                        .customer-details, .invoice-details {
+                        .from-box, .to-box {
                             width: 48%;
+                            border: 1px solid #ddd;
+                            border-radius: 8px;
+                            padding: 14px 18px;
+                            background: #f9f9f9;
                         }
-                        table { 
-                            width: 100%; 
-                            border-collapse: collapse; 
-                            margin-top: 20px; 
+                        .from-box h3, .to-box h3 {
+                            color: #667eea;
+                            margin: 0 0 8px 0;
+                            font-size: 13px;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
                         }
-                        th, td { 
-                            border: 1px solid #ddd; 
-                            padding: 12px; 
-                            text-align: left; 
+                        .from-box p, .to-box p { margin: 3px 0; font-size: 14px; }
+                        .invoice-meta {
+                            display: flex;
+                            justify-content: flex-end;
+                            margin-bottom: 20px;
+                            font-size: 13px;
+                            color: #555;
                         }
-                        th { 
-                            background: #f8f9fa;
+                        .invoice-meta table { width: auto; border: none; margin: 0; }
+                        .invoice-meta td { border: none; padding: 3px 8px; }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 10px;
+                        }
+                        th, td {
+                            border: 1px solid #ddd;
+                            padding: 10px 12px;
+                            text-align: left;
+                        }
+                        th {
+                            background: #667eea;
+                            color: white;
                             font-weight: bold;
+                            font-size: 13px;
                         }
                         .totals {
-                            margin-top: 20px;
+                            margin-top: 15px;
                             text-align: right;
                         }
                         .totals table {
                             margin-left: auto;
-                            width: 300px;
+                            width: 280px;
+                            border: none;
                         }
-                        .grand-total {
+                        .totals td { border: none; padding: 5px 8px; font-size: 14px; }
+                        .grand-total td {
                             background: #667eea;
                             color: white;
                             font-weight: bold;
-                            font-size: 18px;
+                            font-size: 16px;
+                            border-radius: 4px;
                         }
                         .footer {
-                            margin-top: 50px;
+                            margin-top: 40px;
                             text-align: center;
-                            color: #666;
+                            color: #888;
                             border-top: 2px solid #ddd;
-                            padding-top: 20px;
+                            padding-top: 15px;
+                            font-size: 13px;
                         }
                         @media print {
-                            body { padding: 20px; }
+                            body { padding: 15px; }
                         }
                     </style>
                 </head>
                 <body>
                     <div class="header">
-                        <h1>INVOICE</h1>
-                        <p style="font-size: 14px; color: #666;">Invoice #${order.id}</p>
+                        <h1>${STORE_NAME}</h1>
+                        <p style="margin:2px 0; color:#666;">${STORE_CITY} &nbsp;|&nbsp; ${STORE_PHONE}</p>
+                        <p style="font-size:13px; color:#999; margin-top:6px;">INVOICE &nbsp; <strong style="color:#667eea;">${order.orderId || ''}</strong></p>
                     </div>
 
-                    <div class="invoice-info">
-                        <div class="customer-details">
-                            <h3 style="color: #667eea;">Bill To:</h3>
-                            <p><strong>${order.customerName}</strong></p>
-                            <p>${order.customerPhone || 'N/A'}</p>
-                            <p>${order.customerAddress || 'N/A'}</p>
+                    <div class="invoice-meta">
+                        <table>
+                            <tr><td>Date:</td><td><strong>${new Date(order.date).toLocaleDateString('en-PK')}</strong></td></tr>
+                            <tr><td>Payment:</td><td><strong>${order.paymentMethod || 'N/A'}</strong></td></tr>
+                            ${order.parcelType ? `<tr><td>Parcel Type:</td><td><strong style="color:#e74c3c;">${order.parcelType}</strong></td></tr>` : ''}
+                        </table>
+                    </div>
+
+                    <div class="from-to">
+                        <div class="from-box">
+                            <h3>From</h3>
+                            <p><strong>${STORE_NAME}</strong></p>
+                            <p>${STORE_CITY}</p>
+                            <p>${STORE_PHONE}</p>
                         </div>
-                        <div class="invoice-details">
-                            <h3 style="color: #667eea;">Invoice Details:</h3>
-                            <p><strong>Date:</strong> ${new Date(order.date).toLocaleDateString()}</p>
-                            <p><strong>Status:</strong> ${order.status}</p>
-                            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+                        <div class="to-box">
+                            <h3>To</h3>
+                            <p><strong>${order.customerName}</strong></p>
+                            <p>${order.customerPhone || ''}</p>
+                            <p>${order.customerAddress || ''}</p>
                         </div>
                     </div>
 
                     <table>
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th style="text-align: center;">Quantity</th>
-                                <th style="text-align: right;">Unit Price</th>
-                                <th style="text-align: right;">Total</th>
+                                <th style="text-align:center; width:40px;">#</th>
+                                <th>Description</th>
+                                <th style="text-align: center;">Qty</th>
+                                <th style="text-align: right;">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemsHTML}
+                            <tr>
+                                <td style="text-align:center;">1</td>
+                                <td>1 Parcel${order.items && order.items[0] && order.items[0].deal ? ' — ' + order.items[0].deal : ''}</td>
+                                <td style="text-align:center;">1</td>
+                                <td style="text-align:right;">Rs. ${sellPrice.toLocaleString()}</td>
+                            </tr>
                         </tbody>
                     </table>
 
                     <div class="totals">
                         <table>
-                            <tr>
-                                <td>Subtotal:</td>
-                                <td style="text-align: right;"><strong>Rs. ${order.sellPrice.toLocaleString()}</strong></td>
-                            </tr>
-                            ${order.paymentMethod === 'COD' ? `
-                            <tr>
-                                <td>COD Tax (4%):</td>
-                                <td style="text-align: right;"><strong>Rs. ${order.codTax.toFixed(2)}</strong></td>
-                            </tr>
-                            ` : ''}
-                            <tr>
-                                <td>Delivery Charges:</td>
-                                <td style="text-align: right;"><strong>Rs. ${order.deliveryCharges}</strong></td>
-                            </tr>
                             <tr class="grand-total">
-                                <td>GRAND TOTAL:</td>
-                                <td style="text-align: right;"><strong>Rs. ${order.total.toLocaleString()}</strong></td>
+                                <td>TOTAL AMOUNT:</td>
+                                <td style="text-align: right;">Rs. ${sellPrice.toLocaleString()}</td>
                             </tr>
                         </table>
                     </div>
 
                     <div class="footer">
-                        <p>Thank you for your business!</p>
-                        <p style="font-size: 12px;">This is a computer-generated invoice.</p>
+                        <p>Shukriya! Dobara zaroor aayein. — ${STORE_NAME}</p>
                     </div>
                 </body>
                 </html>
@@ -2717,34 +2913,44 @@ Status: ${order.status}`);
 
         // Export to Excel
         function exportToExcel() {
-            let csv = 'Order ID,Customer,Phone,Address,Date,Category,Size,Color,Quantity,Unit Cost,Unit Sell,Item Cost,Item Sell,Actual Cost,Sell Price,COD Tax,Delivery,Total,Profit,Payment Method,Status\n';
+            const q = v => `"${String(v || '').replace(/"/g, '""')}"`;
+            let csv = 'Order ID,Customer,Phone,Address,Date,Deal,Category,Size,Color,Qty,Sell Price,COD Tax,Delivery,Total,Profit,Payment,Parcel Type,Status\n';
             orders.forEach(order => {
-                if (!order.items || order.items.length === 0) return;
-                
+                const orderId   = order.orderId || '';
+                const name      = order.customerName || '';
+                const phone     = order.customerPhone || '';
+                const address   = order.customerAddress || '';
+                const date      = order.date ? new Date(order.date).toLocaleDateString('en-PK') : '';
+                const deal      = (order.items && order.items[0] && order.items[0].deal) || '';
+                const sellPrice = order.sellPrice || 0;
+                const codTax    = order.codTax || 0;
+                const delivery  = order.deliveryCharges || 0;
+                const total     = order.total || 0;
+                const profit    = order.profit || 0;
+                const payment   = order.paymentMethod || '';
+                const parcel    = order.parcelType || '';
+                const status    = order.status || '';
+
+                if (!order.items || order.items.length === 0) {
+                    csv += `${q(orderId)},${q(name)},${q(phone)},${q(address)},${q(date)},${q(deal)},,,,,${sellPrice},${codTax},${delivery},${total},${profit.toFixed(2)},${q(payment)},${q(parcel)},${q(status)}\n`;
+                    return;
+                }
+
                 order.items.forEach((item, index) => {
-                    const category = item.category || 'N/A';
-                    const unitCost = item.unitCost || 0;
-                    const unitSell = item.unitSell || 0;
-                    const itemCost = item.costPrice || 0;
-                    const itemSell = item.sellPrice || item.price || 0;
-                    
+                    const category = item.category || '';
+                    const size     = item.size || '';
+                    const color    = item.color || '';
+                    const qty      = item.quantity || 0;
+
                     if (index === 0) {
-                        const actualCost = order.actualCost || 0;
-                        const sellPrice = order.sellPrice || order.total || 0;
-                        const codTax = order.codTax || 0;
-                        const deliveryCharges = order.deliveryCharges || 0;
-                        const total = order.total || 0;
-                        const profit = order.profit || 0;
-                        const paymentMethod = order.paymentMethod || 'N/A';
-                        
-                        csv += `${order.id},${order.customerName},${order.customerPhone || 'N/A'},${order.customerAddress || 'N/A'},${order.date},${category},${item.size},${item.color},${item.quantity},${unitCost},${unitSell},${itemCost},${itemSell},${actualCost},${sellPrice},${codTax},${deliveryCharges},${total},${profit.toFixed(2)},${paymentMethod},${order.status}\n`;
+                        csv += `${q(orderId)},${q(name)},${q(phone)},${q(address)},${q(date)},${q(deal)},${q(category)},${q(size)},${q(color)},${qty},${sellPrice},${codTax},${delivery},${total},${profit.toFixed(2)},${q(payment)},${q(parcel)},${q(status)}\n`;
                     } else {
-                        csv += `,,,,,,${category},${item.size},${item.color},${item.quantity},${unitCost},${unitSell},${itemCost},${itemSell},,,,,,,,\n`;
+                        csv += `,,,,,, ${q(category)},${q(size)},${q(color)},${qty},,,,,,,,\n`;
                     }
                 });
             });
 
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -2856,7 +3062,7 @@ Status: ${order.status}`);
             const paymentMethod = document.getElementById('editOrderPayment').value;
 
             const sellPrice = order.items.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
-            const codTax = paymentMethod === 'COD' ? (sellPrice * 0.04) : 0;
+            const codTax = ['COD','Allow to Open','COD Retail'].includes(paymentMethod) ? (sellPrice * 0.04) : 0;
             const total = sellPrice + codTax + deliveryCharges;
 
             document.getElementById('editOrderSellPrice').textContent = sellPrice.toLocaleString();
@@ -2881,7 +3087,7 @@ Status: ${order.status}`);
             // Recalculate financials
             order.sellPrice = order.items.reduce((sum, item) => sum + (item.sellPrice || 0), 0);
             order.actualCost = order.items.reduce((sum, item) => sum + (item.costPrice || 0), 0);
-            order.codTax = order.paymentMethod === 'COD' ? (order.sellPrice * 0.04) : 0;
+            order.codTax = ['COD','Allow to Open','COD Retail'].includes(order.paymentMethod) ? (order.sellPrice * 0.04) : 0;
             order.total = order.sellPrice + order.codTax + order.deliveryCharges;
             order.profit = order.sellPrice - order.actualCost - order.deliveryCharges - order.codTax;
 
@@ -3230,6 +3436,8 @@ Status: ${order.status}`);
                     console.log('Updating inventory display...');
                     updateInventoryDisplay();
                     console.log('Inventory display updated');
+
+                    updateOrdersTable();
 
                     document.getElementById('orderDate').valueAsDate = new Date();
 

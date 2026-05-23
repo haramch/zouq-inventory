@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     orderId: {
-        type: Number,
-        unique: true,
+        type: String,
         required: true
     },
     customerName: {
@@ -56,6 +55,11 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['COD', 'Prepaid'],
         default: 'COD'
+    },
+    parcelType: {
+        type: String,
+        enum: ['', 'Allow to Open', 'COD Retail'],
+        default: ''
     },
     total: {
         type: Number,
